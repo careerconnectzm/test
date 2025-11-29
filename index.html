@@ -1,0 +1,3523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CareerConnect - Find Local Professionals</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs@1.6.1/dist/cropper.min.css">
+  <style>
+    :root {
+      --primary-color: #1877f2;
+      --secondary-color: #42b72a;
+      --bg-color: #f0f2f5;
+      --card-bg: #ffffff;
+      --text-primary: #050505;
+      --text-secondary: #65676b;
+      --divider: #e4e6eb;
+      --hover-bg: #f2f2f2;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.1);
+      --radius: 12px;
+      --radius-lg: 16px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--bg-color);
+      color: var(--text-primary);
+      line-height: 1.5;
+    }
+
+    header {
+      background: var(--card-bg);
+      box-shadow: var(--shadow);
+      padding: 0 16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      height: 56px;
+    }
+
+    .header-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      color: var(--primary-color);
+      font-weight: bold;
+      font-size: 24px;
+      text-decoration: none;
+    }
+
+    .logo i {
+      margin-right: 8px;
+    }
+
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--primary-color);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      cursor: pointer;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .user-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.2s ease;
+    }
+
+    .user-avatar:hover img {
+      transform: scale(1.05);
+    }
+
+    .main-container {
+      display: flex;
+      max-width: 1200px;
+      margin: 20px auto;
+      gap: 20px;
+      padding: 0 16px;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--card-bg);
+      display: flex;
+      justify-content: space-around;
+      padding: 8px 0;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+      z-index: 100;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 8px;
+      border-radius: 8px;
+      cursor: pointer;
+      color: var(--text-secondary);
+      flex: 1;
+      max-width: 100px;
+      transition: all 0.2s ease;
+    }
+
+    .nav-item.active {
+      color: var(--primary-color);
+      background: rgba(24, 119, 242, 0.1);
+    }
+
+    .nav-item:hover {
+      background: var(--hover-bg);
+    }
+
+    .nav-item i {
+      font-size: 20px;
+      margin-bottom: 4px;
+    }
+
+    .nav-item span {
+      font-size: 12px;
+    }
+
+    .main-content {
+      flex: 1;
+      max-width: 680px;
+      margin-bottom: 70px;
+    }
+
+    .search-container {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .search-box {
+      display: flex;
+      gap: 12px;
+    }
+
+    .search-box input {
+      flex: 1;
+      padding: 12px 16px;
+      border-radius: 20px;
+      border: 1px solid var(--divider);
+      background: var(--bg-color);
+      font-size: 16px;
+    }
+
+    .search-box button {
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 20px;
+      padding: 0 20px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .search-box button:hover {
+      background: #0e6ce0;
+    }
+
+    .workers-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .worker-card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow);
+      display: flex;
+      gap: 16px;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      position: relative;
+    }
+
+    .worker-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .worker-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      overflow: hidden;
+      flex-shrink: 0;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .worker-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.2s ease;
+    }
+
+    .worker-avatar:hover img {
+      transform: scale(1.1);
+    }
+
+    .worker-info {
+      flex: 1;
+    }
+
+    .worker-name {
+      font-weight: bold;
+      font-size: 16px;
+      margin-bottom: 4px;
+    }
+
+    .worker-job {
+      color: var(--text-secondary);
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .worker-location {
+      color: var(--text-secondary);
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+
+    .worker-rating {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 14px;
+    }
+
+    .worker-rating i {
+      color: #f7b928;
+    }
+
+    .favorite-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: none;
+      border: none;
+      font-size: 18px;
+      cursor: pointer;
+      color: #ddd;
+      transition: color 0.2s ease;
+      z-index: 10;
+    }
+
+    .favorite-btn:hover {
+      color: #f7b928;
+    }
+
+    .favorite-btn.active {
+      color: #f7b928;
+    }
+
+    .worker-profile {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow);
+      position: relative;
+    }
+
+    .profile-header {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 16px;
+      position: relative;
+    }
+
+    .profile-avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      overflow: hidden;
+      flex-shrink: 0;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .profile-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.2s ease;
+    }
+
+    .profile-avatar:hover img {
+      transform: scale(1.1);
+    }
+
+    .profile-details {
+      flex: 1;
+    }
+
+    .profile-name {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .profile-job {
+      font-size: 18px;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .profile-location {
+      font-size: 16px;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .profile-stats {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .profile-description {
+      margin-bottom: 16px;
+      line-height: 1.6;
+    }
+
+    .profile-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      flex: 1;
+      text-align: center;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background: var(--primary-color);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #0e6ce0;
+    }
+
+    .btn-secondary {
+      background: var(--secondary-color);
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: #36a420;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--divider);
+      color: var(--text-primary);
+    }
+
+    .btn-outline:hover {
+      background: var(--hover-bg);
+    }
+
+    .orders-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--divider);
+      margin-bottom: 16px;
+    }
+
+    .tab {
+      padding: 12px 16px;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s ease;
+    }
+
+    .tab.active {
+      border-bottom-color: var(--primary-color);
+      color: var(--primary-color);
+      font-weight: bold;
+    }
+
+    .tab:hover {
+      background: var(--hover-bg);
+      border-radius: 4px 4px 0 0;
+    }
+
+    .order-card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .order-card:hover {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .order-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .order-status {
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .status-pending {
+      background: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffeaa7;
+    }
+
+    .status-accepted {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #b8dae3;
+    }
+
+    .status-completed {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6c3;
+    }
+
+    .status-rejected {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f1b0b7;
+    }
+
+    .order-worker {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .order-worker-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .order-worker-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.2s ease;
+    }
+
+    .order-worker-avatar:hover img {
+      transform: scale(1.1);
+    }
+
+    .order-details {
+      margin-bottom: 12px;
+    }
+
+    .order-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .account-section {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .account-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .account-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .account-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.2s ease;
+    }
+
+    .account-avatar:hover img {
+      transform: scale(1.1);
+    }
+
+    .account-info h2 {
+      margin-bottom: 4px;
+    }
+
+    .account-info p {
+      color: var(--text-secondary);
+    }
+
+    .account-details {
+      margin-top: 16px;
+    }
+
+    .detail-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--divider);
+      transition: background 0.2s ease;
+    }
+
+    .detail-item:hover {
+      background: var(--hover-bg);
+      border-radius: 4px;
+    }
+
+    .detail-item:last-child {
+      border-bottom: none;
+    }
+
+    .auth-container {
+      max-width: 400px;
+      margin: 60px auto;
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .auth-header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .auth-header h1 {
+      color: var(--primary-color);
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+
+    .auth-header p {
+      color: var(--text-secondary);
+    }
+
+    .auth-form input, .auth-form select, .auth-form textarea {
+      width: 100%;
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      border: 1px solid var(--divider);
+      border-radius: 6px;
+      font-size: 16px;
+      font-family: inherit;
+    }
+
+    .auth-form input:focus, .auth-form select:focus, .auth-form textarea:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px rgba(24, 119, 242, 0.2);
+    }
+
+    .account-type-selector {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .account-type {
+      flex: 1;
+      text-align: center;
+      padding: 12px;
+      border: 2px solid var(--divider);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .account-type.selected {
+      border-color: var(--primary-color);
+      background: rgba(24, 119, 242, 0.1);
+    }
+
+    .account-type:hover {
+      background: var(--hover-bg);
+    }
+
+    .auth-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .btn {
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .btn-primary {
+      background: var(--primary-color);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #0e6ce0;
+    }
+
+    .btn-secondary {
+      background: var(--secondary-color);
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: #36a420;
+    }
+
+    .job-details-container {
+      max-width: 500px;
+      margin: 60px auto;
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    /* Enhanced Chat Modal Styles */
+    .chat-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+
+    .chat-container {
+      background: white;
+      border-radius: var(--radius);
+      width: 100%;
+      max-width: 500px;
+      height: 80%;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .chat-header {
+      padding: 16px;
+      border-bottom: 1px solid var(--divider);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .chat-messages {
+      flex: 1;
+      padding: 16px;
+      overflow-y: auto;
+    }
+
+    .message {
+      margin-bottom: 16px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .message.sent {
+      align-items: flex-end;
+    }
+
+    .message.received {
+      align-items: flex-start;
+    }
+
+    .message-content {
+      max-width: 70%;
+      padding: 12px;
+      border-radius: 18px;
+      position: relative;
+    }
+
+    .message.received .message-content {
+      background: var(--bg-color);
+    }
+
+    .message.sent .message-content {
+      background: var(--primary-color);
+      color: white;
+    }
+
+    .message-time {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+      padding: 0 4px;
+    }
+
+    .message.sent .message-time {
+      text-align: right;
+    }
+
+    .message.received .message-time {
+      text-align: left;
+    }
+
+    .date-divider {
+      text-align: center;
+      margin: 16px 0;
+      position: relative;
+    }
+
+    .date-divider::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: var(--divider);
+      z-index: 1;
+    }
+
+    .date-divider span {
+      background: white;
+      padding: 4px 12px;
+      border-radius: 16px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      position: relative;
+      z-index: 2;
+    }
+
+    .chat-input {
+      padding: 16px;
+      border-top: 1px solid var(--divider);
+      display: flex;
+      gap: 12px;
+    }
+
+    .chat-input input {
+      flex: 1;
+      padding: 12px;
+      border: 1px solid var(--divider);
+      border-radius: 20px;
+    }
+
+    .chat-input button {
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 20px;
+      padding: 0 20px;
+      cursor: pointer;
+    }
+
+    .chat-booking-section {
+      padding: 16px;
+      border-top: 1px solid var(--divider);
+      background: var(--bg-color);
+    }
+
+    .booking-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: var(--radius);
+      width: 100%;
+      max-width: 500px;
+      padding: 24px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .modal-header {
+      margin-bottom: 16px;
+    }
+
+    .modal-title {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .modal-body {
+      margin-bottom: 24px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid var(--divider);
+      border-radius: 6px;
+      font-size: 16px;
+      font-family: inherit;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px rgba(24, 119, 242, 0.2);
+    }
+
+    .modal-footer {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+    }
+
+    .rating-stars {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin: 16px 0;
+    }
+
+    .rating-star {
+      font-size: 32px;
+      color: #ddd;
+      cursor: pointer;
+      transition: color 0.2s ease;
+    }
+
+    .rating-star.active {
+      color: #f7b928;
+    }
+
+    .search-page {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--card-bg);
+      z-index: 1000;
+      display: none;
+      flex-direction: column;
+    }
+
+    .search-page-header {
+      display: flex;
+      align-items: center;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--divider);
+      background: var(--card-bg);
+    }
+
+    .search-page-back {
+      background: none;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      color: var(--text-primary);
+      margin-right: 12px;
+    }
+
+    .search-page-input {
+      flex: 1;
+      padding: 10px 16px;
+      border-radius: 20px;
+      border: 1px solid var(--divider);
+      background: var(--bg-color);
+      font-size: 16px;
+    }
+
+    .search-page-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+    }
+
+    .search-filters {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .filter-section {
+      margin-bottom: 16px;
+    }
+
+    .filter-title {
+      font-weight: bold;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .filter-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .filter-option {
+      padding: 6px 12px;
+      border: 1px solid var(--divider);
+      border-radius: 16px;
+      background: var(--bg-color);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .filter-option.active {
+      background: var(--primary-color);
+      color: white;
+      border-color: var(--primary-color);
+    }
+
+    .search-results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .sort-options {
+      position: relative;
+    }
+
+    .sort-button {
+      background: none;
+      border: 1px solid var(--divider);
+      border-radius: 6px;
+      padding: 6px 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .sort-dropdown {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-lg);
+      padding: 8px 0;
+      min-width: 150px;
+      z-index: 10;
+      display: none;
+    }
+
+    .sort-dropdown.show {
+      display: block;
+    }
+
+    .sort-option {
+      padding: 8px 16px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .sort-option:hover {
+      background: var(--hover-bg);
+    }
+
+    .search-page-worker-profile {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow);
+      position: relative;
+    }
+
+    .profile-photo-container {
+      margin-bottom: 16px;
+    }
+
+    .profile-photo-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .profile-photo-preview {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      overflow: hidden;
+      margin: 0 auto 16px;
+      border: 3px solid var(--primary-color);
+      cursor: pointer;
+      position: relative;
+      background: var(--bg-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .profile-photo-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .profile-photo-preview:hover img {
+      transform: scale(1.05);
+    }
+
+    .profile-photo-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      background: var(--divider);
+    }
+
+    .profile-photo-placeholder i {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+
+    .profile-photo-upload-btn {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: center;
+      transition: background 0.2s ease;
+    }
+
+    .profile-photo-upload-btn:hover {
+      background: #0e6ce0;
+    }
+
+    .image-viewer-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      padding: 20px;
+    }
+
+    .image-viewer-content {
+      position: relative;
+      max-width: 90%;
+      max-height: 90%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .image-viewer-content img {
+      max-width: 100%;
+      max-height: 90vh;
+      object-fit: contain;
+      border-radius: 8px;
+    }
+
+    .image-viewer-close {
+      position: absolute;
+      top: -40px;
+      right: 0;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      padding: 8px;
+    }
+
+    .image-viewer-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      padding: 16px;
+      border-radius: 50%;
+      transition: background 0.2s ease;
+    }
+
+    .image-viewer-nav:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .image-viewer-prev {
+      left: 20px;
+    }
+
+    .image-viewer-next {
+      right: 20px;
+    }
+
+    .image-viewer-counter {
+      position: absolute;
+      bottom: -40px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      color: white;
+      font-size: 16px;
+    }
+
+    .cropping-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      padding: 20px;
+    }
+
+    .cropping-container {
+      background: white;
+      border-radius: var(--radius);
+      width: 100%;
+      max-width: 600px;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+    }
+
+    .cropping-header {
+      padding: 16px;
+      border-bottom: 1px solid var(--divider);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .cropping-body {
+      flex: 1;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      max-height: 60vh;
+      overflow: hidden;
+    }
+
+    .cropping-preview-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 16px;
+    }
+
+    .cropping-preview-label {
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
+    .cropping-preview {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 2px solid var(--primary-color);
+    }
+
+    .cropping-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .cropping-actions {
+      padding: 16px;
+      border-top: 1px solid var(--divider);
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+    }
+
+    .cropper-container {
+      max-width: 100%;
+      max-height: 400px;
+    }
+
+    @media (max-width: 768px) {
+      .main-container {
+        flex-direction: column;
+        padding: 0 8px;
+      }
+      
+      .worker-card, .worker-profile, .order-card, .account-section {
+        padding: 12px;
+      }
+      
+      .profile-actions {
+        flex-direction: column;
+      }
+      
+      .modal {
+        padding: 10px;
+      }
+      
+      .modal-content {
+        padding: 16px;
+      }
+      
+      .profile-photo-preview {
+        width: 100px;
+        height: 100px;
+      }
+
+      .cropping-container {
+        max-width: 95%;
+      }
+    }
+    
+    .account-status-message {
+      background: #fff3cd;
+      border: 1px solid #ffeaa7;
+      border-radius: 8px;
+      padding: 16px;
+      margin: 16px 0;
+      color: #856404;
+    }
+
+    .account-status-message h3 {
+      color: #856404;
+      margin-bottom: 8px;
+    }
+
+    .complaint-btn {
+      background: #dc3545;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 16px;
+      cursor: pointer;
+      margin-top: 12px;
+      font-weight: bold;
+    }
+
+    .complaint-btn:hover {
+      background: #c82333;
+    }
+  </style>
+</head>
+<body>
+  <header id="mainHeader" style="display: none;">
+    <div class="header-container">
+      <a href="#" class="logo">
+        <i class="fas fa-briefcase"></i>
+        CareerConnect
+      </a>
+      
+      <div class="user-avatar" id="headerUserAvatar" onclick="viewProfileImage(currentUserData.profilePhotoURL, currentUserData.fullName)">
+        <img id="headerUserAvatarImg" src="" alt="User Avatar">
+      </div>
+    </div>
+  </header>
+
+  <div class="search-page" id="searchPage">
+    <div class="search-page-header">
+      <button class="search-page-back" onclick="closeSearchPage()">
+        <i class="fas fa-arrow-left"></i>
+      </button>
+      <input type="text" class="search-page-input" id="searchPageInput" placeholder="Search for professionals or services..." onkeypress="handleSearchPageKeypress(event)">
+      <button onclick="executeSearch()" style="background: none; border: none; margin-left: 12px; cursor: pointer;">
+        <i class="fas fa-search"></i>
+      </button>
+    </div>
+    
+    <div class="search-page-content">
+      <div class="search-filters">
+        <div class="filter-section">
+          <div class="filter-title">
+            <span>Rating</span>
+          </div>
+          <div class="filter-options">
+            <div class="filter-option" data-filter="rating" data-value="4" onclick="toggleFilter(this)">4★ & above</div>
+            <div class="filter-option" data-filter="rating" data-value="3" onclick="toggleFilter(this)">3★ & above</div>
+            <div class="filter-option" data-filter="rating" data-value="2" onclick="toggleFilter(this)">2★ & above</div>
+            <div class="filter-option" data-filter="rating" data-value="1" onclick="toggleFilter(this)">1★ & above</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="search-results-header">
+        <div class="search-results-count" id="searchResultsCount">0 results</div>
+        <div class="sort-options">
+          <button class="sort-button" onclick="toggleSortDropdown()">
+            Sort by <i class="fas fa-chevron-down"></i>
+          </button>
+          <div class="sort-dropdown" id="sortDropdown">
+            <div class="sort-option" data-sort="rating" onclick="sortResults('rating')">Highest Rated</div>
+            <div class="sort-option" data-sort="jobs" onclick="sortResults('jobs')">Most Jobs</div>
+            <div class="sort-option" data-sort="name" onclick="sortResults('name')">Name (A-Z)</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="workers-list" id="searchResultsList">
+      </div>
+      
+      <div id="searchPageWorkerProfile" style="display: none;">
+      </div>
+    </div>
+  </div>
+
+  <div class="auth-container" id="authSection">
+    <div class="auth-header">
+      <h1>CareerConnect</h1>
+      <p>Find local professionals or get hired</p>
+    </div>
+    
+    <div class="auth-form">
+      <div class="account-type-selector">
+        <div class="account-type selected" id="normalAccountType" onclick="selectAccountType('normal')">
+          <i class="fas fa-user"></i>
+          <div>Normal User</div>
+        </div>
+        <div class="account-type" id="professionalAccountType" onclick="selectAccountType('professional')">
+          <i class="fas fa-tools"></i>
+          <div>Professional</div>
+        </div>
+      </div>
+      
+      <input type="text" id="fullName" placeholder="Full Name">
+      <input type="email" id="email" placeholder="Email">
+      <input type="tel" id="phone" placeholder="Phone Number">
+      <select id="city" style="display: none;">
+        <option value="">Select City</option>
+        <option value="Lusaka">Lusaka</option>
+      </select>
+      <select id="area" style="display: none;">
+        <option value="">Select Area</option>
+        <option value="Avondale">Avondale</option>
+        <option value="Bauleni">Bauleni</option>
+        <option value="Central Business District">Central Business District</option>
+        <option value="Chaisa">Chaisa</option>
+        <option value="Chainda">Chainda</option>
+        <option value="Chamba Valley">Chamba Valley</option>
+        <option value="Chawama">Chawama</option>
+        <option value="Chelstone">Chelstone</option>
+        <option value="Chilenje">Chilenje</option>
+        <option value="Chilanga">Chilanga</option>
+        <option value="Chipata Compound">Chipata Compound</option>
+        <option value="Chudleigh">Chudleigh</option>
+        <option value="Emmasdale">Emmasdale</option>
+        <option value="Fairview">Fairview</option>
+        <option value="Garden Compound">Garden Compound</option>
+        <option value="George Compound">George Compound</option>
+        <option value="Ibex Hill">Ibex Hill</option>
+        <option value="Industrial Area">Industrial Area</option>
+        <option value="Jack Compound">Jack Compound</option>
+        <option value="John Laing">John Laing</option>
+        <option value="Kabwata">Kabwata</option>
+        <option value="Kabulonga">Kabulonga</option>
+        <option value="Kalingalinga">Kalingalinga</option>
+        <option value="Kalundu">Kalundu</option>
+        <option value="Kamwala">Kamwala</option>
+        <option value="Kanyama">Kanyama</option>
+        <option value="Libala">Libala</option>
+        <option value="Longacres">Longacres</option>
+        <option value="Lusaka Town Area">Lusaka Town Area</option>
+        <option value="Makeni">Makeni</option>
+        <option value="Mandevu">Mandevu</option>
+        <option value="Mass Media">Mass Media</option>
+        <option value="Matero">Matero</option>
+        <option value="Misisi">Misisi</option>
+        <option value="Mtendere">Mtendere</option>
+        <option value="Ng'ombe">Ng'ombe</option>
+        <option value="Northmead">Northmead</option>
+        <option value="Nyumba Yanga">Nyumba Yanga</option>
+        <option value="Olympia Park">Olympia Park</option>
+        <option value="PHI">PHI</option>
+        <option value="Roma">Roma</option>
+        <option value="Showgrounds">Showgrounds</option>
+        <option value="Sunningdale">Sunningdale</option>
+        <option value="Thorn Park">Thorn Park</option>
+        <option value="Villa Elizabetha">Villa Elizabetha</option>
+        <option value="Woodlands">Woodlands</option>
+        <option value="Other">Other</option>
+      </select>
+      
+      <div class="profile-photo-container" id="profilePhotoContainer" style="display: none;">
+        <label class="profile-photo-label">Profile Photo</label>
+        <div class="profile-photo-preview" id="profilePhotoPreview" onclick="document.getElementById('profilePhoto').click()">
+          <div class="profile-photo-placeholder">
+            <i class="fas fa-camera"></i>
+            <span>Click to upload</span>
+          </div>
+        </div>
+        <input type="file" id="profilePhoto" accept="image/*" style="display: none;" onchange="openCroppingModal(event)">
+        <button type="button" class="profile-photo-upload-btn" onclick="document.getElementById('profilePhoto').click()">
+          <i class="fas fa-upload"></i> Choose Profile Photo
+        </button>
+      </div>
+      
+      <input type="password" id="password" placeholder="Password">
+      
+      <div class="auth-buttons">
+        <button class="btn btn-primary" onclick="emailLogin()">Log In</button>
+        <button class="btn btn-secondary" onclick="emailSignUp()">Create Account</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="job-details-container" id="jobDetailsSection" style="display: none;">
+    <div class="auth-header">
+      <h1>Complete Your Profile</h1>
+      <p>Tell us about your skills and services</p>
+    </div>
+    
+    <div class="auth-form">
+      <select id="jobTitle">
+        <option value="">Select Your Profession</option>
+        <option value="Agricultural Extension Worker">Agricultural Extension Worker</option>
+        <option value="Air Conditioning Technician">Air Conditioning Technician</option>
+        <option value="Appliance Installer">Appliance Installer</option>
+        <option value="Babysitter">Babysitter</option>
+        <option value="Bartender">Bartender</option>
+        <option value="Blogger / Content Creator">Blogger / Content Creator</option>
+        <option value="Builder / Bricklayer">Builder / Bricklayer</option>
+        <option value="Bus Conductor">Bus Conductor</option>
+        <option value="Carpenter">Carpenter</option>
+        <option value="Carpet Cleaner">Carpet Cleaner</option>
+        <option value="Cashier">Cashier</option>
+        <option value="Caterer">Caterer</option>
+        <option value="Cleaner">Cleaner</option>
+        <option value="Community Health Worker">Community Health Worker</option>
+        <option value="Computer Repair Technician">Computer Repair Technician</option>
+        <option value="Cook / Chef">Cook / Chef</option>
+        <option value="Decorator">Decorator</option>
+        <option value="Delivery Rider / Courier">Delivery Rider / Courier</option>
+        <option value="DJ / Sound Technician">DJ / Sound Technician</option>
+        <option value="Domestic Worker / Maid">Domestic Worker / Maid</option>
+        <option value="Driver">Driver</option>
+        <option value="Driving Instructor">Driving Instructor</option>
+        <option value="DSTV Technician">DSTV Technician</option>
+        <option value="Electrician">Electrician</option>
+        <option value="Event Planner">Event Planner</option>
+        <option value="Farmer">Farmer</option>
+        <option value="Fashion Designer / Tailor">Fashion Designer / Tailor</option>
+        <option value="Fisherman">Fisherman</option>
+        <option value="Fridge Repairman">Fridge Repairman</option>
+        <option value="Furniture Assembler">Furniture Assembler</option>
+        <option value="Gardener">Gardener</option>
+        <option value="Graphic Designer">Graphic Designer</option>
+        <option value="Hairdresser / Barber">Hairdresser / Barber</option>
+        <option value="Handyman">Handyman</option>
+        <option value="House Maintenance">House Maintenance</option>
+        <option value="IT Support Technician">IT Support Technician</option>
+        <option value="Laundry Services">Laundry Services</option>
+        <option value="Livestock Keeper">Livestock Keeper</option>
+        <option value="Makeup Artist">Makeup Artist</option>
+        <option value="Market Vendor / Trader">Market Vendor / Trader</option>
+        <option value="Mechanic">Mechanic</option>
+        <option value="Mover">Mover</option>
+        <option value="Music Teacher">Music Teacher</option>
+        <option value="Nurse / Caregiver">Nurse / Caregiver</option>
+        <option value="Painter">Painter</option>
+        <option value="Pest Control Technician">Pest Control Technician</option>
+        <option value="Personal Trainer">Personal Trainer</option>
+        <option value="Photographer">Photographer</option>
+        <option value="Plumber">Plumber</option>
+        <option value="Receptionist">Receptionist</option>
+        <option value="Repairman">Repairman</option>
+        <option value="Roofing Specialist">Roofing Specialist</option>
+        <option value="Salesperson">Salesperson</option>
+        <option value="Security Camera Installer">Security Camera Installer</option>
+        <option value="Security Guard">Security Guard</option>
+        <option value="Shop Attendant">Shop Attendant</option>
+        <option value="Social Media Manager">Social Media Manager</option>
+        <option value="Solar Panel Installer">Solar Panel Installer</option>
+        <option value="Sports Coach">Sports Coach</option>
+        <option value="Tailor">Tailor</option>
+        <option value="Taxi Driver / Bolt Driver">Taxi Driver / Bolt Driver</option>
+        <option value="Technician">Technician</option>
+        <option value="Tiler">Tiler</option>
+        <option value="Traditional Healer">Traditional Healer</option>
+        <option value="Tutor">Tutor</option>
+        <option value="TV Repair and Mounting Specialist">TV Repair and Mounting Specialist</option>
+        <option value="Videographer">Videographer</option>
+        <option value="Waiter / Waitress">Waiter / Waitress</option>
+        <option value="Watchman">Watchman</option>
+        <option value="Web Developer">Web Developer</option>
+        <option value="Welder">Welder</option>
+        <option value="Other">Other</option>
+      </select>
+      <textarea id="jobDescription" placeholder="Describe your skills and services (max 500 words)" rows="5" style="width: 100%; padding: 12px 16px; border: 1px solid var(--divider); border-radius: 6px; font-family: inherit; font-size: 16px;"></textarea>
+      
+      <div class="auth-buttons">
+        <button class="btn btn-primary" onclick="saveJobDetails()">Save & Continue</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="mainSection" style="display:none;">
+    <div class="main-container">
+      <div class="main-content">
+        <div id="accountStatusMessage" class="account-status-message" style="display: none;">
+        </div>
+      
+        <div id="homeSection" class="section active">
+          <div class="search-container">
+            <div class="search-box">
+              <input type="text" id="searchInput" placeholder="Search for professionals or services..." onfocus="openSearchPage()">
+              <button onclick="openSearchPage()"><i class="fas fa-search"></i></button>
+            </div>
+          </div>
+          
+          <div class="workers-list" id="workersList">
+          </div>
+          
+          <div id="workerProfileView" style="display: none;">
+          </div>
+        </div>
+
+        <div id="favoritesSection" class="section" style="display: none;">
+          <div class="search-container">
+            <h2>My Favorite Professionals</h2>
+            <p>Your saved professionals for quick access</p>
+          </div>
+          
+          <div class="workers-list" id="favoritesList">
+          </div>
+          
+          <div id="favoritesEmpty" style="text-align: center; padding: 40px 20px; color: var(--text-secondary);">
+            <i class="fas fa-star" style="font-size: 48px; margin-bottom: 16px; color: #ddd;"></i>
+            <h3>No favorites yet</h3>
+            <p>Save your favorite professionals by clicking the star icon on their profile</p>
+          </div>
+        </div>
+
+        <div id="ordersSection" class="section" style="display: none;">
+          <div class="orders-tabs">
+            <div class="tab active" onclick="switchOrderTab('current')">Current Jobs</div>
+            <div class="tab" onclick="switchOrderTab('history')">History</div>
+          </div>
+          
+          <div id="currentOrdersList">
+          </div>
+          
+          <div id="historyOrdersList" style="display: none;">
+          </div>
+        </div>
+
+        <div id="accountSection" class="section" style="display: none;">
+          <div class="account-section">
+            <div class="account-header">
+              <div class="account-avatar" onclick="viewProfileImage(currentUserData.profilePhotoURL, currentUserData.fullName)">
+                <img id="accountAvatarImg" src="" alt="User Avatar">
+              </div>
+              <div class="account-info">
+                <h2 id="accountUserName"></h2>
+                <p id="accountUserType"></p>
+              </div>
+            </div>
+            
+            <div class="account-details">
+              <div class="detail-item">
+                <span>Email</span>
+                <span id="accountEmail"></span>
+              </div>
+              <div class="detail-item">
+                <span>Phone</span>
+                <span id="accountPhone"></span>
+              </div>
+              <div class="detail-item" id="accountCityItem" style="display: none;">
+                <span>City</span>
+                <span id="accountCity"></span>
+              </div>
+              <div class="detail-item" id="accountAreaItem" style="display: none;">
+                <span>Area</span>
+                <span id="accountArea"></span>
+              </div>
+              <div class="detail-item" id="accountProfessionItem" style="display: none;">
+                <span>Profession</span>
+                <span id="accountProfession"></span>
+              </div>
+              <div class="detail-item">
+                <span>Change Password</span>
+                <span><i class="fas fa-chevron-right"></i></span>
+              </div>
+              <div class="detail-item" onclick="logout()" style="cursor: pointer; color: #f3425f;">
+                <span>Logout</span>
+                <span><i class="fas fa-sign-out-alt"></i></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-nav">
+      <div class="nav-item active" onclick="showSection('home')">
+        <i class="fas fa-home"></i>
+        <span>Home</span>
+      </div>
+      <div class="nav-item" onclick="showSection('favorites')">
+        <i class="fas fa-star"></i>
+        <span>Favorites</span>
+      </div>
+      <div class="nav-item" onclick="showSection('orders')">
+        <i class="fas fa-list"></i>
+        <span>My Jobs</span>
+      </div>
+      <div class="nav-item" onclick="showSection('account')">
+        <i class="fas fa-user"></i>
+        <span>Account</span>
+      </div>
+    </div>
+  </div>
+  
+  <div class="modal" id="complaintModal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title">File a Complaint</div>
+        <p>Describe the issue with your account suspension/deletion</p>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="complaintReason">Complaint Reason</label>
+          <select id="complaintReason" class="form-control">
+            <option value="">Select Reason</option>
+            <option value="wrongful_suspension">Wrongful Suspension</option>
+            <option value="wrongful_deletion">Wrongful Account Deletion</option>
+            <option value="unfair_reason">Unfair Reason Provided</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="complaintDetails">Detailed Explanation</label>
+          <textarea id="complaintDetails" class="form-control" rows="4" placeholder="Please provide detailed explanation of your complaint..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeComplaintModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="submitComplaint()">Submit Complaint</button>
+      </div>
+    </div>
+  </div>
+  
+  <div class="cropping-modal" id="croppingModal" style="display: none;">
+    <div class="cropping-container">
+      <div class="cropping-header">
+        <h3>Crop Your Profile Photo</h3>
+        <button onclick="closeCroppingModal()"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="cropping-body">
+        <div id="cropperContainer" style="width: 100%; max-width: 400px; max-height: 300px;">
+          <img id="cropperImage" src="" alt="Image to crop" style="max-width: 100%; max-height: 300px;">
+        </div>
+        <div class="cropping-preview-container">
+          <div class="cropping-preview-label">Preview</div>
+          <div class="cropping-preview">
+            <img id="cropperPreview" src="" alt="Cropped preview">
+          </div>
+        </div>
+      </div>
+      <div class="cropping-actions">
+        <button class="btn btn-outline" onclick="closeCroppingModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="applyCrop()">Apply Crop</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="chat-modal" id="chatModal" style="display: none;">
+    <div class="chat-container">
+      <div class="chat-header">
+        <h3 id="chatWithName">Chat</h3>
+        <button onclick="closeChat()"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="chat-messages" id="chatMessages">
+      </div>
+      
+      <div class="chat-booking-section" id="chatBookingSection" style="display: none;">
+        <div style="text-align: center; margin-bottom: 12px;">
+          <strong>Ready to book this professional?</strong>
+        </div>
+        <div class="booking-actions">
+          <button class="btn btn-primary" onclick="bookFromChat()" style="flex: 1;">
+            <i class="fas fa-calendar-check"></i> Book Now
+          </button>
+        </div>
+      </div>
+      
+      <div class="chat-input">
+        <input type="text" id="chatMessageInput" placeholder="Type a message..." onkeypress="handleChatInputKeypress(event)">
+        <button onclick="sendMessage()">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="bookingModal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title">Book a Professional</div>
+        <p>Provide details about the job you need done</p>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="jobTypeInput">Job Type</label>
+          <input type="text" id="jobTypeInput" class="form-control" placeholder="e.g., Plumbing repair, Electrical work">
+        </div>
+        <div class="form-group">
+          <label for="jobDescriptionInput">Job Description</label>
+          <textarea id="jobDescriptionInput" class="form-control" rows="4" placeholder="Please describe the job you need in detail..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeBookingModal()">Cancel</button>
+        <button class="btn btn-primary" id="confirmBookingBtn">Book Now</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="ratingModal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title">Rate This Job</div>
+        <p>How would you rate the service you received?</p>
+      </div>
+      <div class="modal-body">
+        <div class="rating-stars" id="ratingStars">
+          <i class="fas fa-star rating-star" data-rating="1"></i>
+          <i class="fas fa-star rating-star" data-rating="2"></i>
+          <i class="fas fa-star rating-star" data-rating="3"></i>
+          <i class="fas fa-star rating-star" data-rating="4"></i>
+          <i class="fas fa-star rating-star" data-rating="5"></i>
+        </div>
+        <div class="form-group">
+          <label for="ratingComment">Comments (Optional)</label>
+          <textarea id="ratingComment" class="form-control" rows="3" placeholder="Share your experience..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeRatingModal()">Cancel</button>
+        <button class="btn btn-primary" id="submitRatingBtn">Submit Rating</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="image-viewer-modal" id="imageViewerModal" style="display: none;">
+    <div class="image-viewer-content">
+      <img id="fullSizeImage" src="" alt="Full size image">
+      <button class="image-viewer-close" onclick="closeImageViewer()">
+        <i class="fas fa-times"></i>
+      </button>
+      <div class="image-viewer-counter" id="imageViewerCounter"></div>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/12.2.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.2.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.6.1/dist/cropper.min.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBLyFEpT7g4h1w9q20AjDF65TCZHV8kwfo",
+      authDomain: "career-connect-d84da.firebaseapp.com",
+      projectId: "career-connect-d84da",
+      storageBucket: "career-connect-d84da.firebasestorage.app",
+      messagingSenderId: "663938489307",
+      appId: "1:663938489307:web:21db9f2c173887d5d7e5fe",
+    };
+
+    const app = firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    let currentUserData = null;
+    let currentChatWith = null;
+    let currentChatId = null;
+    let isProfessionalInChat = false;
+    let currentWorkerToBook = null;
+    let currentJobToRate = null;
+    let selectedRating = 0;
+    let userFavorites = [];
+    
+    let searchResults = [];
+    let activeFilters = {};
+    let currentSort = 'rating';
+
+    let isLoadingWorkers = false;
+    let isLoadingOrders = false;
+    let jobListenersUnsubscribe = [];
+    let lastSectionClick = 0;
+
+    let selectedProfilePhoto = null;
+    let cropper = null;
+    let croppedImageBlob = null;
+
+    function getFullImageUrl(url) {
+      if (!url) return '';
+      if (url.startsWith('http')) return url;
+      if (url.startsWith('/')) return 'https://brightboard.academy' + url;
+      return url;
+    }
+
+    function getColorFromName(name) {
+      let hash = 0;
+      for (let i = 0; i < name.length; i++) {
+        hash = name.charCodeAt(i) + ((hash << 5) - hash);
+      }
+      let color = (hash & 0x00FFFFFF).toString(16).toUpperCase();
+      return "00000".substring(0, 6 - color.length) + color;
+    }
+
+    function formatChatDate(timestamp) {
+      if (!timestamp) return '';
+      
+      const messageDate = timestamp.toDate();
+      const today = new Date();
+      const yesterday = new Date(today);
+      yesterday.setDate(yesterday.getDate() - 1);
+      
+      if (messageDate.toDateString() === today.toDateString()) {
+        return 'Today';
+      }
+      else if (messageDate.toDateString() === yesterday.toDateString()) {
+        return 'Yesterday';
+      }
+      else if (messageDate.getFullYear() === today.getFullYear()) {
+        return messageDate.toLocaleDateString('en-US', { day: 'numeric', month: 'long' });
+      }
+      else {
+        return messageDate.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' });
+      }
+    }
+
+    function formatChatTime(timestamp) {
+      if (!timestamp) return '';
+      
+      const messageDate = timestamp.toDate();
+      return messageDate.toLocaleTimeString('en-US', { 
+        hour: 'numeric', 
+        minute: '2-digit',
+        hour12: true 
+      }).toLowerCase();
+    }
+
+    function groupMessagesByDate(messages) {
+      const groupedMessages = [];
+      let currentDate = '';
+      
+      messages.forEach(message => {
+        const messageDate = formatChatDate(message.timestamp);
+        
+        if (messageDate !== currentDate) {
+          groupedMessages.push({
+            type: 'date',
+            date: messageDate
+          });
+          currentDate = messageDate;
+        }
+        
+        groupedMessages.push({
+          type: 'message',
+          ...message
+        });
+      });
+      
+      return groupedMessages;
+    }
+
+    function openCroppingModal(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      if (!file.type.startsWith('image/')) {
+        alert('Please select an image file (JPEG, PNG, etc.)');
+        return;
+      }
+
+      if (file.size > 5 * 1024 * 1024) {
+        alert('Please select an image smaller than 5MB');
+        return;
+      }
+
+      selectedProfilePhoto = file;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const modal = document.getElementById('croppingModal');
+        const cropperImage = document.getElementById('cropperImage');
+        const cropperPreview = document.getElementById('cropperPreview');
+        
+        cropperImage.src = e.target.result;
+        cropperPreview.src = e.target.result;
+        
+        modal.style.display = 'flex';
+        
+        if (cropper) {
+          cropper.destroy();
+        }
+        
+        cropper = new Cropper(cropperImage, {
+          aspectRatio: 1,
+          viewMode: 1,
+          autoCropArea: 0.8,
+          responsive: true,
+          restore: false,
+          guides: true,
+          center: true,
+          highlight: false,
+          cropBoxMovable: true,
+          cropBoxResizable: true,
+          toggleDragModeOnDblclick: false,
+          ready: function() {
+            this.cropper.crop();
+          },
+          crop: function(event) {
+            const canvas = this.cropper.getCroppedCanvas({
+              width: 100,
+              height: 100
+            });
+            cropperPreview.src = canvas.toDataURL();
+          }
+        });
+        
+        document.body.style.overflow = 'hidden';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function closeCroppingModal() {
+      const modal = document.getElementById('croppingModal');
+      modal.style.display = 'none';
+      
+      if (cropper) {
+        cropper.destroy();
+        cropper = null;
+      }
+      
+      document.body.style.overflow = 'auto';
+    }
+
+    function applyCrop() {
+      if (!cropper) return;
+      
+      const canvas = cropper.getCroppedCanvas({
+        width: 300,
+        height: 300
+      });
+      
+      canvas.toBlob(function(blob) {
+        croppedImageBlob = blob;
+        
+        const preview = document.getElementById('profilePhotoPreview');
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          preview.innerHTML = `<img src="${e.target.result}" alt="Profile preview">`;
+        };
+        reader.readAsDataURL(blob);
+        
+        closeCroppingModal();
+      }, 'image/jpeg', 0.9);
+    }
+
+    function viewProfileImage(imageUrl, userName) {
+      if (!imageUrl) {
+        alert('No profile image available');
+        return;
+      }
+
+      const fullImageUrl = getFullImageUrl(imageUrl);
+      const modal = document.getElementById('imageViewerModal');
+      const fullSizeImage = document.getElementById('fullSizeImage');
+      
+      fullSizeImage.src = fullImageUrl;
+      fullSizeImage.alt = `${userName}'s profile picture`;
+      
+      modal.style.display = 'flex';
+      
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeImageViewer() {
+      const modal = document.getElementById('imageViewerModal');
+      modal.style.display = 'none';
+      
+      document.body.style.overflow = 'auto';
+    }
+
+    function cleanupJobListeners() {
+      jobListenersUnsubscribe.forEach(unsubscribe => unsubscribe());
+      jobListenersUnsubscribe = [];
+    }
+
+    function openSearchPage() {
+      document.getElementById("searchPage").style.display = "flex";
+      document.getElementById("searchPageInput").focus();
+      
+      const currentSearch = document.getElementById("searchInput").value;
+      if (currentSearch) {
+        document.getElementById("searchPageInput").value = currentSearch;
+        executeSearch();
+      }
+    }
+
+    function closeSearchPage() {
+      document.getElementById("searchPage").style.display = "none";
+      const searchTerm = document.getElementById("searchPageInput").value;
+      document.getElementById("searchInput").value = searchTerm;
+    }
+
+    function handleSearchPageKeypress(event) {
+      if (event.key === 'Enter') {
+        executeSearch();
+      }
+    }
+
+    async function executeSearch() {
+      const searchTerm = document.getElementById("searchPageInput").value.toLowerCase().trim();
+      const resultsList = document.getElementById("searchResultsList");
+      const workerProfileView = document.getElementById("searchPageWorkerProfile");
+      
+      workerProfileView.style.display = 'none';
+      resultsList.style.display = 'flex';
+      
+      resultsList.innerHTML = '<p>Searching...</p>';
+      
+      try {
+        let query = db.collection("users").where("accountType", "==", "professional");
+        
+        const snapshot = await query.get();
+        searchResults = [];
+        
+        snapshot.forEach(doc => {
+          const worker = doc.data();
+          worker.uid = doc.id;
+          
+          const matchesSearch = !searchTerm || 
+            worker.fullName.toLowerCase().includes(searchTerm) ||
+            (worker.jobTitle && worker.jobTitle.toLowerCase().includes(searchTerm)) ||
+            (worker.area && worker.area.toLowerCase().includes(searchTerm)) ||
+            (worker.city && worker.city.toLowerCase().includes(searchTerm));
+          
+          if (matchesSearch) {
+            searchResults.push(worker);
+          }
+        });
+        
+        await applyFilters();
+        
+        document.getElementById("searchResultsCount").textContent = `${searchResults.length} results`;
+        
+        displaySearchResults();
+        
+      } catch (error) {
+        console.error("Error searching workers: ", error);
+        resultsList.innerHTML = '<p>Error searching. Please try again.</p>';
+      }
+    }
+
+    async function applyFilters() {
+      if (Object.keys(activeFilters).length === 0) {
+        return;
+      }
+      
+      if (activeFilters.rating) {
+        const minRating = parseInt(activeFilters.rating);
+        
+        const filteredResults = [];
+        
+        for (const worker of searchResults) {
+          const ratingInfo = await getWorkerAverageRating(worker.uid);
+          if (parseFloat(ratingInfo.average) >= minRating) {
+            filteredResults.push(worker);
+          }
+        }
+        
+        searchResults = filteredResults;
+      }
+    }
+
+    function displaySearchResults() {
+      const resultsList = document.getElementById("searchResultsList");
+      resultsList.innerHTML = '';
+      
+      if (searchResults.length === 0) {
+        resultsList.innerHTML = '<p>No professionals found matching your criteria.</p>';
+        return;
+      }
+      
+      sortResults(currentSort);
+    }
+
+    function toggleFilter(element) {
+      const filterType = element.getAttribute('data-filter');
+      const filterValue = element.getAttribute('data-value');
+      
+      element.classList.toggle('active');
+      
+      if (element.classList.contains('active')) {
+        activeFilters[filterType] = filterValue;
+      } else {
+        delete activeFilters[filterType];
+      }
+      
+      applyFilters().then(() => {
+        document.getElementById("searchResultsCount").textContent = `${searchResults.length} results`;
+        displaySearchResults();
+      });
+    }
+
+    function toggleSortDropdown() {
+      document.getElementById("sortDropdown").classList.toggle('show');
+    }
+
+    async function sortResults(sortType) {
+      currentSort = sortType;
+      
+      document.getElementById("sortDropdown").classList.remove('show');
+      
+      if (sortType === 'rating') {
+        const sortedResults = [];
+        
+        for (const worker of searchResults) {
+          const ratingInfo = await getWorkerAverageRating(worker.uid);
+          worker.ratingValue = parseFloat(ratingInfo.average);
+          sortedResults.push(worker);
+        }
+        
+        sortedResults.sort((a, b) => b.ratingValue - a.ratingValue);
+        searchResults = sortedResults;
+      } else if (sortType === 'jobs') {
+        searchResults.sort((a, b) => (b.jobsCompleted || 0) - (a.jobsCompleted || 0));
+      } else if (sortType === 'name') {
+        searchResults.sort((a, b) => a.fullName.localeCompare(b.fullName));
+      }
+      
+      const resultsList = document.getElementById("searchResultsList");
+      resultsList.innerHTML = '';
+      
+      const workerCards = [];
+      
+      for (const worker of searchResults) {
+        const workerCard = await createWorkerCard(worker, false);
+        workerCards.push(workerCard);
+      }
+      
+      workerCards.forEach(card => {
+        resultsList.appendChild(card);
+      });
+    }
+
+    async function showSearchPageWorkerProfile(worker) {
+      const resultsList = document.getElementById("searchResultsList");
+      const workerProfileView = document.getElementById("searchPageWorkerProfile");
+      
+      resultsList.style.display = 'none';
+      workerProfileView.style.display = 'block';
+      
+      workerProfileView.innerHTML = '<p>Loading profile...</p>';
+      
+      const detailedCard = await createWorkerCard(worker, true);
+      workerProfileView.innerHTML = '';
+      workerProfileView.appendChild(detailedCard);
+    }
+
+    function closeSearchPageWorkerProfile() {
+      const resultsList = document.getElementById("searchResultsList");
+      const workerProfileView = document.getElementById("searchPageWorkerProfile");
+      
+      resultsList.style.display = 'flex';
+      workerProfileView.style.display = 'none';
+    }
+
+    function selectAccountType(type) {
+      document.getElementById('normalAccountType').classList.remove('selected');
+      document.getElementById('professionalAccountType').classList.remove('selected');
+      document.getElementById(type + 'AccountType').classList.add('selected');
+      
+      const professionalFields = ['city', 'area'];
+      professionalFields.forEach(field => {
+        document.getElementById(field).style.display = type === 'professional' ? 'block' : 'none';
+      });
+      
+      document.getElementById('profilePhotoContainer').style.display = type === 'professional' ? 'block' : 'none';
+    }
+
+    async function uploadProfilePhoto(file, userId) {
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        const response = await fetch('https://brightboard.academy/upload.php', {
+          method: 'POST',
+          body: formData
+        });
+        
+        if (!response.ok) {
+          throw new Error(`Upload failed with status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.url) {
+          return data.url;
+        } else {
+          throw new Error(data.error || 'Upload failed');
+        }
+      } catch (error) {
+        console.error("Error uploading profile photo:", error);
+        throw error;
+      }
+    }
+
+    async function emailSignUp() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const fullName = document.getElementById("fullName").value;
+      const accountType = document.querySelector('.account-type.selected').id.replace('AccountType', '');
+      
+      if (!email || !password || !fullName) {
+        alert("Please fill in all required fields");
+        return;
+      }
+      
+      if (password.length < 6) {
+        alert("Password must be at least 6 characters long");
+        return;
+      }
+      
+      const phone = document.getElementById("phone").value;
+      if (!phone) {
+        alert("Please provide your phone number");
+        return;
+      }
+      
+      if (accountType === 'professional') {
+        const city = document.getElementById("city").value;
+        const area = document.getElementById("area").value;
+        
+        if (!city || !area) {
+          alert("Please fill in all professional fields");
+          return;
+        }
+        
+        if (!croppedImageBlob) {
+          alert("Please select and crop a profile photo");
+          return;
+        }
+      }
+
+      try {
+        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+        const user = userCredential.user;
+        
+        let profilePhotoURL = '';
+        if (accountType === 'professional') {
+          try {
+            profilePhotoURL = await uploadProfilePhoto(croppedImageBlob, user.uid);
+          } catch (uploadError) {
+            console.error("Profile photo upload failed:", uploadError);
+            alert("Profile photo upload failed. Please try again with a different image.");
+            await user.delete();
+            return;
+          }
+        }
+        
+        const userData = {
+          uid: user.uid,
+          email: email,
+          fullName: fullName,
+          accountType: accountType,
+          phone: phone,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+        
+        if (accountType === 'professional') {
+          userData.city = document.getElementById("city").value;
+          userData.area = document.getElementById("area").value;
+          userData.profilePhotoURL = profilePhotoURL;
+          userData.rating = 0;
+          userData.jobsCompleted = 0;
+        }
+        
+        await db.collection("users").doc(user.uid).set(userData);
+        
+        if (accountType === 'professional') {
+          document.getElementById("authSection").style.display = "none";
+          document.getElementById("jobDetailsSection").style.display = "block";
+        } else {
+          showMainApp();
+        }
+      } catch (error) {
+        console.error("Error creating account:", error);
+        alert("Error creating account: " + error.message);
+      }
+    }
+    
+    async function emailLogin() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      
+      try {
+        await auth.signInWithEmailAndPassword(email, password);
+      } catch (error) {
+        alert("Error signing in: " + error.message);
+      }
+    }
+    
+    function logout() {
+      cleanupJobListeners();
+      auth.signOut();
+    }
+    
+    async function saveJobDetails() {
+      const user = auth.currentUser;
+      if (!user) return;
+      
+      const jobTitle = document.getElementById("jobTitle").value;
+      const jobDescription = document.getElementById("jobDescription").value;
+      
+      if (!jobTitle || !jobDescription) {
+        alert("Please fill in all job details");
+        return;
+      }
+      
+      try {
+        await db.collection("users").doc(user.uid).update({
+          jobTitle: jobTitle,
+          jobDescription: jobDescription
+        });
+        
+        showMainApp();
+      } catch (error) {
+        alert("Error saving job details: " + error.message);
+      }
+    }
+    
+    function showMainApp() {
+      if (currentUserData.accountStatus === 'suspended' || currentUserData.accountStatus === 'deleted') {
+        document.getElementById("authSection").style.display = "none";
+        document.getElementById("jobDetailsSection").style.display = "none";
+        document.getElementById("mainSection").style.display = "block";
+        document.getElementById("mainHeader").style.display = "flex";
+        
+        document.querySelector('.bottom-nav').style.display = 'none';
+        showSection('account');
+        
+        loadUserData();
+        return;
+      }
+
+      document.getElementById("authSection").style.display = "none";
+      document.getElementById("jobDetailsSection").style.display = "none";
+      document.getElementById("mainSection").style.display = "block";
+      document.getElementById("mainHeader").style.display = "flex";
+      
+      document.querySelector('.bottom-nav').style.display = 'flex';
+      
+      loadUserData();
+      loadWorkers();
+      loadOrders();
+      setupJobListeners();
+      loadFavorites();
+    }
+    
+    function showAccountStatusMessage() {
+      const messageDiv = document.getElementById('accountStatusMessage');
+      if (currentUserData.accountStatus === 'suspended') {
+        messageDiv.innerHTML = `
+          <h3><i class="fas fa-exclamation-triangle"></i> Account Suspended</h3>
+          <p><strong>Reason:</strong> ${currentUserData.suspensionReason || 'No reason provided'}</p>
+          <p>Your account has been temporarily suspended. You cannot access most features.</p>
+          <button class="complaint-btn" onclick="openComplaintModal()">
+            <i class="fas fa-flag"></i> File Complaint
+          </button>
+        `;
+        messageDiv.style.display = 'block';
+      } else if (currentUserData.accountStatus === 'deleted') {
+        messageDiv.innerHTML = `
+          <h3><i class="fas fa-ban"></i> Account Deleted</h3>
+          <p><strong>Reason:</strong> ${currentUserData.deletionReason || 'No reason provided'}</p>
+          <p>Your account has been permanently deleted.</p>
+          <button class="complaint-btn" onclick="openComplaintModal()">
+            <i class="fas fa-flag"></i> File Complaint
+          </button>
+        `;
+        messageDiv.style.display = 'block';
+      } else {
+        messageDiv.style.display = 'none';
+      }
+    }
+
+    function openComplaintModal() {
+      document.getElementById('complaintModal').style.display = 'flex';
+    }
+
+    function closeComplaintModal() {
+      document.getElementById('complaintModal').style.display = 'none';
+    }
+
+    async function submitComplaint() {
+      const reason = document.getElementById('complaintReason').value;
+      const details = document.getElementById('complaintDetails').value;
+
+      if (!reason || !details) {
+        alert('Please fill in all complaint fields');
+        return;
+      }
+
+      try {
+        await db.collection('complaints').add({
+          userId: auth.currentUser.uid,
+          userName: currentUserData.fullName,
+          userEmail: currentUserData.email,
+          userType: currentUserData.accountType,
+          reason: reason,
+          details: details,
+          accountStatus: currentUserData.accountStatus,
+          adminReason: currentUserData.accountStatus === 'suspended' ? 
+            currentUserData.suspensionReason : currentUserData.deletionReason,
+          status: 'pending',
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        alert('Complaint submitted successfully! We will review it soon.');
+        closeComplaintModal();
+      } catch (error) {
+        console.error('Error submitting complaint:', error);
+        alert('Error submitting complaint: ' + error.message);
+      }
+    }
+    
+    async function loadUserData() {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      try {
+        const userDoc = await db.collection("users").doc(user.uid).get();
+        if (userDoc.exists) {
+          currentUserData = userDoc.data();
+          
+          showAccountStatusMessage();
+
+          document.getElementById("accountUserName").innerText = currentUserData.fullName;
+          document.getElementById("accountUserType").innerText = currentUserData.accountType === 'professional' ? 'Professional' : 'User';
+          document.getElementById("accountEmail").innerText = currentUserData.email;
+          document.getElementById("accountPhone").innerText = currentUserData.phone || 'Not set';
+          
+          if (currentUserData.profilePhotoURL) {
+            const fullPhotoUrl = getFullImageUrl(currentUserData.profilePhotoURL);
+            document.getElementById("headerUserAvatarImg").src = fullPhotoUrl;
+            document.getElementById("accountAvatarImg").src = fullPhotoUrl;
+            
+            document.getElementById("headerUserAvatarImg").onerror = function() {
+              this.style.display = 'none';
+              document.getElementById("headerUserAvatar").innerHTML = currentUserData.fullName.charAt(0).toUpperCase();
+            };
+            
+            document.getElementById("accountAvatarImg").onerror = function() {
+              this.style.display = 'none';
+              const accountAvatar = document.querySelector('.account-avatar');
+              accountAvatar.innerHTML = currentUserData.fullName.charAt(0).toUpperCase();
+              accountAvatar.style.backgroundColor = '#' + getColorFromName(currentUserData.fullName);
+              accountAvatar.style.display = 'flex';
+              accountAvatar.style.alignItems = 'center';
+              accountAvatar.style.justifyContent = 'center';
+              accountAvatar.style.color = 'white';
+              accountAvatar.style.fontWeight = 'bold';
+              accountAvatar.style.fontSize = '24px';
+            };
+          } else {
+            const initial = currentUserData.fullName.charAt(0).toUpperCase();
+            document.getElementById("headerUserAvatar").innerHTML = initial;
+            document.getElementById("headerUserAvatar").style.backgroundColor = '#' + getColorFromName(currentUserData.fullName);
+            
+            const accountAvatar = document.querySelector('.account-avatar');
+            accountAvatar.innerHTML = initial;
+            accountAvatar.style.backgroundColor = '#' + getColorFromName(currentUserData.fullName);
+            accountAvatar.style.display = 'flex';
+            accountAvatar.style.alignItems = 'center';
+            accountAvatar.style.justifyContent = 'center';
+            accountAvatar.style.color = 'white';
+            accountAvatar.style.fontWeight = 'bold';
+            accountAvatar.style.fontSize = '24px';
+          }
+          
+          if (currentUserData.accountType === 'professional') {
+            document.getElementById("accountCityItem").style.display = 'flex';
+            document.getElementById("accountAreaItem").style.display = 'flex';
+            document.getElementById("accountProfessionItem").style.display = 'flex';
+            document.getElementById("accountCity").innerText = currentUserData.city || 'Not set';
+            document.getElementById("accountArea").innerText = currentUserData.area || 'Not set';
+            document.getElementById("accountProfession").innerText = currentUserData.jobTitle || 'Not set';
+          }
+        }
+      } catch (error) {
+        console.error("Error loading user data:", error);
+      }
+    }
+
+    async function loadWorkers() {
+      if (isLoadingWorkers) return;
+      isLoadingWorkers = true;
+      
+      const workersList = document.getElementById("workersList");
+      workersList.innerHTML = '<p>Loading professionals...</p>';
+      
+      try {
+        const snapshot = await db.collection("users")
+          .where("accountType", "==", "professional")
+          .get();
+        
+        workersList.innerHTML = '';
+        
+        if (snapshot.empty) {
+          workersList.innerHTML = '<p>No professionals found in your area.</p>';
+          return;
+        }
+        
+        const workerCards = [];
+        
+        for (const doc of snapshot.docs) {
+          const worker = doc.data();
+          worker.uid = doc.id;
+          const workerCard = await createWorkerCard(worker, false);
+          workerCards.push(workerCard);
+        }
+        
+        workerCards.forEach(card => {
+          workersList.appendChild(card);
+        });
+        
+      } catch (error) {
+        console.error("Error loading workers: ", error);
+        workersList.innerHTML = '<p>Error loading professionals. Please try again.</p>';
+      } finally {
+        isLoadingWorkers = false;
+      }
+    }
+
+    async function createWorkerCard(worker, isDetailed) {
+      const card = document.createElement('div');
+      card.className = isDetailed ? 'worker-profile' : 'worker-card';
+      
+      const ratingInfo = await getWorkerAverageRating(worker.uid);
+      
+      const isFavorite = userFavorites.includes(worker.uid);
+      
+      if (isDetailed) {
+        card.innerHTML = `
+          <div class="profile-header">
+            <div class="profile-avatar" onclick="viewProfileImage('${worker.profilePhotoURL}', '${worker.fullName}')">
+              <img src="${getFullImageUrl(worker.profilePhotoURL)}" alt="${worker.fullName}" onerror="this.style.display='none'">
+            </div>
+            <div class="profile-details">
+              <div class="profile-name">${worker.fullName}</div>
+              <div class="profile-job">${worker.jobTitle || 'Professional'}</div>
+              <div class="profile-location">${worker.area}, ${worker.city}</div>
+              <div class="profile-stats">
+                <div class="stat">
+                  <div class="stat-value">${ratingInfo.average}</div>
+                  <div class="stat-label">Rating</div>
+                </div>
+                <div class="stat">
+                  <div class="stat-value">${ratingInfo.count}</div>
+                  <div class="stat-label">Ratings</div>
+                </div>
+                <div class="stat">
+                  <div class="stat-value">${worker.jobsCompleted || 0}</div>
+                  <div class="stat-label">Jobs Done</div>
+                </div>
+              </div>
+            </div>
+            <button class="btn btn-outline" onclick="${isDetailed ? (document.getElementById("searchPage").style.display === "flex" ? "closeSearchPageWorkerProfile()" : "closeWorkerProfile()") : ''}" style="align-self: flex-start;">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          <div class="profile-description">
+            ${worker.jobDescription || 'No description provided.'}
+          </div>
+          <div class="profile-actions">
+            <button class="btn btn-secondary" onclick="startChat('${worker.uid}')">Message</button>
+            <button class="btn btn-primary" onclick="openBookingModal('${worker.uid}')">Book Now</button>
+          </div>
+          <button class="favorite-btn ${isFavorite ? 'active' : ''}" onclick="toggleFavorite('${worker.uid}', event)">
+            <i class="fas fa-star"></i>
+          </button>
+        `;
+      } else {
+        card.onclick = () => {
+          if (document.getElementById("searchPage").style.display === "flex") {
+            showSearchPageWorkerProfile(worker);
+          } else {
+            showWorkerProfile(worker);
+          }
+        };
+        
+        card.innerHTML = `
+          <div class="worker-avatar" onclick="viewProfileImage('${worker.profilePhotoURL}', '${worker.fullName}')">
+            <img src="${getFullImageUrl(worker.profilePhotoURL)}" alt="${worker.fullName}" onerror="this.style.display='none'">
+          </div>
+          <div class="worker-info">
+            <div class="worker-name">${worker.fullName}</div>
+            <div class="worker-job">${worker.jobTitle || 'Professional'}</div>
+            <div class="worker-location">${worker.area}, ${worker.city}</div>
+            <div class="worker-rating">
+              <i class="fas fa-star"></i>
+              <span>${ratingInfo.average} (${ratingInfo.count} ratings)</span>
+            </div>
+          </div>
+          <button class="favorite-btn ${isFavorite ? 'active' : ''}" onclick="toggleFavorite('${worker.uid}', event)">
+            <i class="fas fa-star"></i>
+          </button>
+        `;
+      }
+      
+      return card;
+    }
+
+    async function toggleFavorite(workerId, event) {
+      event.stopPropagation();
+      
+      const user = auth.currentUser;
+      if (!user) return;
+      
+      try {
+        const isCurrentlyFavorite = userFavorites.includes(workerId);
+        
+        if (isCurrentlyFavorite) {
+          await db.collection("users").doc(user.uid).collection("favorites").doc(workerId).delete();
+          userFavorites = userFavorites.filter(id => id !== workerId);
+        } else {
+          await db.collection("users").doc(user.uid).collection("favorites").doc(workerId).set({
+            addedAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+          userFavorites.push(workerId);
+        }
+        
+        const favoriteBtn = event.target.closest('.favorite-btn');
+        if (favoriteBtn) {
+          favoriteBtn.classList.toggle('active', !isCurrentlyFavorite);
+        }
+        
+        if (document.getElementById("favoritesSection").style.display !== 'none') {
+          loadFavorites();
+        }
+        
+      } catch (error) {
+        console.error("Error toggling favorite:", error);
+        alert("Error updating favorites. Please try again.");
+      }
+    }
+
+    async function loadFavorites() {
+      const user = auth.currentUser;
+      if (!user) return;
+      
+      const favoritesList = document.getElementById("favoritesList");
+      const favoritesEmpty = document.getElementById("favoritesEmpty");
+      
+      try {
+        const snapshot = await db.collection("users").doc(user.uid).collection("favorites").get();
+        
+        userFavorites = [];
+        const favoriteWorkerIds = [];
+        
+        snapshot.forEach(doc => {
+          userFavorites.push(doc.id);
+          favoriteWorkerIds.push(doc.id);
+        });
+        
+        if (favoriteWorkerIds.length === 0) {
+          favoritesList.innerHTML = '';
+          favoritesEmpty.style.display = 'block';
+          return;
+        }
+        
+        favoritesEmpty.style.display = 'none';
+        favoritesList.innerHTML = '<p>Loading favorites...</p>';
+        
+        const workerPromises = favoriteWorkerIds.map(workerId => 
+          db.collection("users").doc(workerId).get()
+        );
+        
+        const workerSnapshots = await Promise.all(workerPromises);
+        const workers = [];
+        
+        workerSnapshots.forEach(snapshot => {
+          if (snapshot.exists) {
+            const worker = snapshot.data();
+            worker.uid = snapshot.id;
+            workers.push(worker);
+          }
+        });
+        
+        favoritesList.innerHTML = '';
+        
+        if (workers.length === 0) {
+          favoritesList.innerHTML = '<p>No favorite professionals found.</p>';
+          favoritesEmpty.style.display = 'block';
+          return;
+        }
+        
+        const favoriteCards = [];
+        
+        for (const worker of workers) {
+          const workerCard = await createWorkerCard(worker, false);
+          favoriteCards.push(workerCard);
+        }
+        
+        favoriteCards.forEach(card => {
+          favoritesList.appendChild(card);
+        });
+        
+      } catch (error) {
+        console.error("Error loading favorites:", error);
+        favoritesList.innerHTML = '<p>Error loading favorites. Please try again.</p>';
+      }
+    }
+    
+    async function showWorkerProfile(worker) {
+      const workerProfileView = document.getElementById("workerProfileView");
+      workerProfileView.innerHTML = '<p>Loading profile...</p>';
+      
+      const detailedCard = await createWorkerCard(worker, true);
+      workerProfileView.innerHTML = '';
+      workerProfileView.appendChild(detailedCard);
+      workerProfileView.style.display = 'block';
+      
+      document.getElementById("workersList").style.display = 'none';
+    }
+
+    function closeWorkerProfile() {
+      const workerProfileView = document.getElementById("workerProfileView");
+      workerProfileView.style.display = 'none';
+      document.getElementById("workersList").style.display = 'flex';
+    }
+    
+    function searchWorkers() {
+      const searchTerm = document.getElementById("searchInput").value.toLowerCase();
+      const workerCards = document.querySelectorAll('.worker-card');
+      
+      workerCards.forEach(card => {
+        const workerName = card.querySelector('.worker-name').textContent.toLowerCase();
+        const workerJob = card.querySelector('.worker-job').textContent.toLowerCase();
+        const workerLocation = card.querySelector('.worker-location').textContent.toLowerCase();
+        
+        if (workerName.includes(searchTerm) || workerJob.includes(searchTerm) || workerLocation.includes(searchTerm)) {
+          card.style.display = 'flex';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+    
+    function openBookingModal(workerId) {
+      currentWorkerToBook = workerId;
+      document.getElementById("jobTypeInput").value = "";
+      document.getElementById("jobDescriptionInput").value = "";
+      document.getElementById("bookingModal").style.display = "flex";
+      
+      document.getElementById("confirmBookingBtn").onclick = () => bookWorker(workerId);
+    }
+    
+    function closeBookingModal() {
+      document.getElementById("bookingModal").style.display = "none";
+      currentWorkerToBook = null;
+    }
+    
+    async function bookWorker(workerId) {
+      const user = auth.currentUser;
+      if (!user) return;
+      
+      const jobDescription = document.getElementById("jobDescriptionInput").value;
+      if (!jobDescription) {
+        alert("Please describe the job you need.");
+        return;
+      }
+      
+      const jobType = document.getElementById("jobTypeInput").value;
+      if (!jobType) {
+        alert("Please specify the type of job.");
+        return;
+      }
+      
+      try {
+        const clientDoc = await db.collection("users").doc(user.uid).get();
+        const clientData = clientDoc.data();
+        
+        await db.collection("jobs").add({
+          clientId: user.uid,
+          workerId: workerId,
+          status: 'pending',
+          clientName: clientData.fullName,
+          clientPhone: clientData.phone || 'Not provided',
+          clientEmail: clientData.email,
+          jobType: jobType,
+          jobDescription: jobDescription,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        
+        alert('Job request sent successfully!');
+        closeBookingModal();
+        
+        if (document.getElementById("searchPage").style.display === "flex") {
+          closeSearchPageWorkerProfile();
+        } else {
+          document.getElementById("workerProfileView").style.display = 'none';
+          document.getElementById("workersList").style.display = 'flex';
+        }
+        
+        loadOrders();
+      } catch (error) {
+        alert('Error sending job request: ' + error.message);
+      }
+    }
+    
+    async function bookFromChat() {
+      if (!currentChatWith) return;
+      openBookingModal(currentChatWith.uid);
+    }
+    
+    function openRatingModal(jobId) {
+      currentJobToRate = jobId;
+      selectedRating = 0;
+      
+      const stars = document.querySelectorAll('.rating-star');
+      stars.forEach(star => star.classList.remove('active'));
+      
+      stars.forEach(star => {
+        star.onclick = function() {
+          const rating = parseInt(this.getAttribute('data-rating'));
+          selectedRating = rating;
+          
+          stars.forEach((s, index) => {
+            if (index < rating) {
+              s.classList.add('active');
+            } else {
+              s.classList.remove('active');
+            }
+          });
+        };
+      });
+      
+      document.getElementById("ratingComment").value = "";
+      document.getElementById("ratingModal").style.display = "flex";
+    }
+    
+    function closeRatingModal() {
+      document.getElementById("ratingModal").style.display = "none";
+      currentJobToRate = null;
+      selectedRating = 0;
+    }
+    
+    async function loadOrders() {
+      if (isLoadingOrders) return;
+      isLoadingOrders = true;
+      
+      const user = auth.currentUser;
+      if (!user || !currentUserData) return;
+      
+      const currentOrdersList = document.getElementById("currentOrdersList");
+      const historyOrdersList = document.getElementById("historyOrdersList");
+      
+      currentOrdersList.innerHTML = '<p>Loading current jobs...</p>';
+      historyOrdersList.innerHTML = '<p>Loading job history...</p>';
+      
+      let currentQuery;
+      if (currentUserData.accountType === 'professional') {
+        currentQuery = db.collection("jobs")
+          .where("workerId", "==", user.uid)
+          .where("status", "in", ["pending", "accepted"]);
+      } else {
+        currentQuery = db.collection("jobs")
+          .where("clientId", "==", user.uid)
+          .where("status", "in", ["pending", "accepted"]);
+      }
+      
+      const currentSnapshot = await currentQuery.get();
+      currentOrdersList.innerHTML = '';
+      
+      if (currentSnapshot.empty) {
+        currentOrdersList.innerHTML = '<p>No current jobs.</p>';
+      } else {
+        const orders = [];
+        currentSnapshot.forEach(doc => {
+          const order = doc.data();
+          order.id = doc.id;
+          orders.push(order);
+        });
+        
+        orders.sort((a, b) => (b.updatedAt?.toMillis() || 0) - (a.updatedAt?.toMillis() || 0));
+        
+        for (const order of orders) {
+          const orderCard = await createOrderCard(order);
+          currentOrdersList.appendChild(orderCard);
+        }
+      }
+      
+      let historyQuery;
+      if (currentUserData.accountType === 'professional') {
+        historyQuery = db.collection("jobs")
+          .where("workerId", "==", user.uid)
+          .where("status", "in", ["completed", "rejected"]);
+      } else {
+        historyQuery = db.collection("jobs")
+          .where("clientId", "==", user.uid)
+          .where("status", "in", ["completed", "rejected"]);
+      }
+      
+      const historySnapshot = await historyQuery.get();
+      historyOrdersList.innerHTML = '';
+      
+      if (historySnapshot.empty) {
+        historyOrdersList.innerHTML = '<p>No past jobs.</p>';
+      } else {
+        const orders = [];
+        historySnapshot.forEach(doc => {
+          const order = doc.data();
+          order.id = doc.id;
+          orders.push(order);
+        });
+        
+        orders.sort((a, b) => (b.updatedAt?.toMillis() || 0) - (a.updatedAt?.toMillis() || 0));
+        
+        for (const order of orders) {
+          const orderCard = await createOrderCard(order);
+          historyOrdersList.appendChild(orderCard);
+        }
+      }
+      
+      isLoadingOrders = false;
+    }
+
+    async function createOrderCard(order) {
+      const card = document.createElement('div');
+      card.className = 'order-card';
+      
+      let otherUser;
+      if (currentUserData.accountType === 'professional') {
+        const clientDoc = await db.collection("users").doc(order.clientId).get();
+        otherUser = clientDoc.exists ? clientDoc.data() : {
+          fullName: order.clientName || 'Unknown Client',
+          profilePhotoURL: '',
+          jobTitle: 'Client'
+        };
+      } else {
+        const workerDoc = await db.collection("users").doc(order.workerId).get();
+        otherUser = workerDoc.exists ? workerDoc.data() : {
+          fullName: 'Unknown Professional',
+          profilePhotoURL: '',
+          jobTitle: 'Professional'
+        };
+      }
+      
+      let ratingDisplay = '';
+      if (order.status === 'completed' && order.rated && order.rating) {
+        ratingDisplay = `<div><strong>Rating:</strong> ${order.rating} ★</div>`;
+        if (order.ratingComment) {
+          ratingDisplay += `<div><strong>Comment:</strong> ${order.ratingComment}</div>`;
+        }
+      }
+      
+      let statusText = order.status;
+      let statusClass = `status-${order.status}`;
+      
+      let actionButtons = '';
+      
+      if (currentUserData.accountType === 'professional') {
+        if (order.status === 'pending') {
+          actionButtons = `
+            <button class="btn btn-primary" data-action="accept" data-jobid="${order.id}">Accept Job</button>
+            <button class="btn btn-outline" data-action="reject" data-jobid="${order.id}">Reject</button>
+            <button class="btn btn-secondary" data-action="message" data-userid="${order.clientId}" data-jobid="${order.id}">Message Client</button>
+          `;
+        } else if (order.status === 'accepted') {
+          actionButtons = `
+            <button class="btn btn-primary" data-action="complete" data-jobid="${order.id}">Mark as Complete</button>
+            <button class="btn btn-secondary" data-action="message" data-userid="${order.clientId}" data-jobid="${order.id}">Message Client</button>
+          `;
+        } else {
+          actionButtons = `
+            <button class="btn btn-secondary" data-action="message" data-userid="${order.clientId}" data-jobid="${order.id}">Message Client</button>
+          `;
+        }
+      } else {
+        actionButtons = `
+          <button class="btn btn-secondary" data-action="message" data-userid="${order.workerId}" data-jobid="${order.id}">Message Professional</button>
+        `;
+        
+        if (order.status === 'completed' && !order.rated) {
+          actionButtons += `
+            <button class="btn btn-primary" data-action="rate" data-jobid="${order.id}">Rate Job</button>
+          `;
+        }
+      }
+      
+      card.innerHTML = `
+        <div class="order-header">
+          <div class="order-worker">
+            <div class="order-worker-avatar" onclick="viewProfileImage('${otherUser.profilePhotoURL}', '${otherUser.fullName}')">
+              <img src="${getFullImageUrl(otherUser.profilePhotoURL)}" alt="${otherUser.fullName}" onerror="this.style.display='none'">
+            </div>
+            <div>
+              <div><strong>${otherUser.fullName}</strong></div>
+              <div>${otherUser.jobTitle || (currentUserData.accountType === 'professional' ? 'Client' : 'Professional')}</div>
+            </div>
+          </div>
+          <div class="order-status ${statusClass}">${statusText.charAt(0).toUpperCase() + statusText.slice(1)}</div>
+        </div>
+        <div class="order-details">
+          <div><strong>Job Type:</strong> ${order.jobType || 'General Service'}</div>
+          <div><strong>Description:</strong> ${order.jobDescription || 'No description provided'}</div>
+          <div><strong>Requested:</strong> ${order.createdAt ? order.createdAt.toDate().toLocaleDateString() : 'Date not available'}</div>
+          ${currentUserData.accountType === 'professional' && order.status === 'pending' ? `
+            <div style="background: #fff3cd; padding: 8px; border-radius: 4px; margin-top: 8px;">
+              <strong><i class="fas fa-bell"></i> New Job Request!</strong> Please accept or reject this job.
+            </div>
+          ` : ''}
+          ${ratingDisplay}
+        </div>
+        <div class="order-actions">
+          ${actionButtons}
+        </div>
+      `;
+      
+      return card;
+    }
+    
+    function switchOrderTab(tab) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      event.target.classList.add('active');
+      
+      document.getElementById('currentOrdersList').style.display = 'none';
+      document.getElementById('historyOrdersList').style.display = 'none';
+      
+      document.getElementById(tab + 'OrdersList').style.display = 'block';
+    }
+    
+    async function acceptJob(jid) {
+      try {
+        await db.collection("jobs").doc(jid).update({
+          status: 'accepted',
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        
+        alert('Job accepted!');
+        setTimeout(() => loadOrders(), 500);
+      } catch (error) {
+        alert('Error accepting job: ' + error.message);
+      }
+    }
+    
+    async function rejectJob(jid) {
+      try {
+        await db.collection("jobs").doc(jid).update({
+          status: 'rejected',
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        
+        alert('Job rejected.');
+        setTimeout(() => loadOrders(), 500);
+      } catch (error) {
+        alert('Error rejecting job: ' + error.message);
+      }
+    }
+    
+    async function completeJob(jid) {
+      try {
+        await db.collection("jobs").doc(jid).update({
+          status: 'completed',
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        
+        const user = auth.currentUser;
+        const userDoc = await db.collection("users").doc(user.uid).get();
+        const userData = userDoc.data();
+        
+        await db.collection("users").doc(user.uid).update({
+          jobsCompleted: (userData.jobsCompleted || 0) + 1
+        });
+        
+        alert('Job marked as completed!');
+        setTimeout(() => loadOrders(), 500);
+      } catch (error) {
+        alert('Error completing job: ' + error.message);
+      }
+    }
+    
+    async function submitRating() {
+      if (!selectedRating) {
+        alert('Please select a rating');
+        return;
+      }
+
+      try {
+        await db.collection("jobs").doc(currentJobToRate).update({
+          rated: true,
+          rating: selectedRating,
+          ratingComment: document.getElementById("ratingComment").value,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        
+        closeRatingModal();
+        alert('Thank you for your rating!');
+        setTimeout(() => loadOrders(), 500);
+      } catch (error) {
+        console.error("Error submitting rating:", error);
+        alert('Error submitting rating: ' + error.message);
+      }
+    }
+
+    async function getWorkerAverageRating(workerId) {
+      try {
+        const workerJobs = await db.collection("jobs")
+          .where("workerId", "==", workerId)
+          .where("rated", "==", true)
+          .get();
+        
+        let totalRating = 0;
+        let ratedJobs = 0;
+        
+        workerJobs.forEach(doc => {
+          const jobData = doc.data();
+          if (jobData.rating && jobData.rated) {
+            totalRating += jobData.rating;
+            ratedJobs++;
+          }
+        });
+        
+        return {
+          average: ratedJobs > 0 ? (totalRating / ratedJobs).toFixed(1) : 0,
+          count: ratedJobs
+        };
+      } catch (error) {
+        console.error("Error calculating rating:", error);
+        return { average: 0, count: 0 };
+      }
+    }
+    
+    async function startChat(otherUserId, jid = null) {
+      const user = auth.currentUser;
+      if (!user) return;
+      
+      const chatId = [user.uid, otherUserId].sort().join('_');
+      currentChatId = chatId;
+      
+      const otherUserDoc = await db.collection("users").doc(otherUserId).get();
+      currentChatWith = otherUserDoc.data();
+      
+      document.getElementById("chatWithName").textContent = `Chat with ${currentChatWith.fullName}`;
+      document.getElementById("chatModal").style.display = 'flex';
+      
+      isProfessionalInChat = currentChatWith.accountType === 'professional';
+      if (currentUserData.accountType === 'normal' && isProfessionalInChat) {
+        document.getElementById("chatBookingSection").style.display = 'block';
+      } else {
+        document.getElementById("chatBookingSection").style.display = 'none';
+      }
+      
+      loadMessages(chatId);
+      
+      if (jid) {
+        await db.collection("jobs").doc(jid).update({
+          chatId: chatId
+        });
+      }
+    }
+    
+    function closeChat() {
+      document.getElementById("chatModal").style.display = 'none';
+      currentChatWith = null;
+      currentChatId = null;
+      isProfessionalInChat = false;
+    }
+    
+    async function loadMessages(chatId) {
+      const messagesContainer = document.getElementById("chatMessages");
+      messagesContainer.innerHTML = '<p>Loading messages...</p>';
+      
+      try {
+        const snapshot = await db.collection("chats").doc(chatId)
+          .collection("messages")
+          .orderBy("timestamp", "asc")
+          .get();
+        
+        messagesContainer.innerHTML = '';
+        
+        if (snapshot.empty) {
+          messagesContainer.innerHTML = '<p>No messages yet. Start the conversation!</p>';
+          return;
+        }
+        
+        const messages = [];
+        snapshot.forEach(doc => {
+          const message = doc.data();
+          message.id = doc.id;
+          messages.push(message);
+        });
+        
+        const groupedMessages = groupMessagesByDate(messages);
+        
+        groupedMessages.forEach(item => {
+          if (item.type === 'date') {
+            const dateDivider = document.createElement('div');
+            dateDivider.className = 'date-divider';
+            dateDivider.innerHTML = `<span>${item.date}</span>`;
+            messagesContainer.appendChild(dateDivider);
+          } else if (item.type === 'message') {
+            const messageElement = document.createElement('div');
+            messageElement.className = `message ${item.senderId === auth.currentUser.uid ? 'sent' : 'received'}`;
+            
+            messageElement.innerHTML = `
+              <div class="message-content">
+                ${item.text}
+              </div>
+              <div class="message-time">
+                ${formatChatTime(item.timestamp)}
+              </div>
+            `;
+            
+            messagesContainer.appendChild(messageElement);
+          }
+        });
+        
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      } catch (error) {
+        console.error("Error loading messages: ", error);
+        messagesContainer.innerHTML = '<p>Error loading messages.</p>';
+      }
+    }
+    
+    async function sendMessage() {
+      const user = auth.currentUser;
+      if (!user || !currentChatId || !currentChatWith) return;
+      
+      const messageInput = document.getElementById("chatMessageInput");
+      const messageText = messageInput.value.trim();
+      
+      if (!messageText) return;
+      
+      try {
+        await db.collection("chats").doc(currentChatId).collection("messages").add({
+          senderId: user.uid,
+          text: messageText,
+          timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        
+        messageInput.value = '';
+        loadMessages(currentChatId);
+      } catch (error) {
+        alert('Error sending message: ' + error.message);
+      }
+    }
+    
+    function handleChatInputKeypress(event) {
+      if (event.key === 'Enter') {
+        sendMessage();
+      }
+    }
+    
+    function showSection(section) {
+      const now = Date.now();
+      if (now - lastSectionClick < 500) return;
+      lastSectionClick = now;
+      
+      document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+      document.getElementById(section + 'Section').style.display = 'block';
+      
+      document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+      event.currentTarget.classList.add('active');
+      
+      if (section === 'home') {
+        document.getElementById("workerProfileView").style.display = 'none';
+        document.getElementById("workersList").style.display = 'flex';
+      } else if (section === 'favorites') {
+        loadFavorites();
+      }
+    }
+
+    function setupJobListeners() {
+      const user = auth.currentUser;
+      if (!user || !currentUserData) return;
+      
+      cleanupJobListeners();
+      
+      if (currentUserData.accountType === 'professional') {
+        const unsubscribe1 = db.collection("jobs")
+          .where("workerId", "==", user.uid)
+          .where("status", "==", "pending")
+          .onSnapshot((snapshot) => {
+            snapshot.docChanges().forEach((change) => {
+              if (change.type === "added") {
+                if ('Notification' in window && Notification.permission === 'granted') {
+                  new Notification('New Job Request!', {
+                    body: 'You have a new job request to review.',
+                    icon: '/favicon.ico'
+                  });
+                }
+                
+                if (document.getElementById("ordersSection").style.display !== 'none') {
+                  loadOrders();
+                }
+              }
+            });
+          });
+        jobListenersUnsubscribe.push(unsubscribe1);
+      }
+      
+      const unsubscribe2 = db.collection("jobs")
+        .where(currentUserData.accountType === 'professional' ? "workerId" : "clientId", "==", user.uid)
+        .onSnapshot((snapshot) => {
+          let shouldReload = false;
+          snapshot.docChanges().forEach((change) => {
+            if (change.type === "modified" || change.type === "added") {
+              shouldReload = true;
+            }
+          });
+          
+          if (shouldReload && document.getElementById("ordersSection").style.display !== 'none') {
+            loadOrders();
+          }
+        });
+      jobListenersUnsubscribe.push(unsubscribe2);
+    }
+
+    document.addEventListener('click', function(event) {
+      if (event.target.matches('[data-action]')) {
+        const action = event.target.getAttribute('data-action');
+        const jobId = event.target.getAttribute('data-jobid');
+        const userId = event.target.getAttribute('data-userid');
+        
+        switch(action) {
+          case 'accept':
+            acceptJob(jobId);
+            break;
+          case 'reject':
+            rejectJob(jobId);
+            break;
+          case 'complete':
+            completeJob(jobId);
+            break;
+          case 'rate':
+            openRatingModal(jobId);
+            break;
+          case 'message':
+            startChat(userId, jobId);
+            break;
+        }
+      }
+    });
+
+    document.getElementById('imageViewerModal').addEventListener('click', function(event) {
+      if (event.target === this) {
+        closeImageViewer();
+      }
+    });
+
+    document.getElementById('croppingModal').addEventListener('click', function(event) {
+      if (event.target === this) {
+        closeCroppingModal();
+      }
+    });
+
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        closeImageViewer();
+        closeCroppingModal();
+      }
+    });
+
+    auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        try {
+          await loadUserData();
+          
+          if (currentUserData && currentUserData.accountType === 'professional' && !currentUserData.jobTitle) {
+            document.getElementById("authSection").style.display = "none";
+            document.getElementById("jobDetailsSection").style.display = "block";
+          } else {
+            showMainApp();
+          }
+        } catch (error) {
+          console.error("Error loading user data:", error);
+        }
+      } else {
+        document.getElementById("authSection").style.display = "block";
+        document.getElementById("mainSection").style.display = "none";
+        document.getElementById("mainHeader").style.display = "none";
+        document.getElementById("jobDetailsSection").style.display = "none";
+        currentUserData = null;
+        userFavorites = [];
+        selectedProfilePhoto = null;
+        croppedImageBlob = null;
+      }
+    });
+
+    selectAccountType('normal');
+    
+    document.getElementById("submitRatingBtn").onclick = submitRating;
+  </script>
+</body>
+</html>
