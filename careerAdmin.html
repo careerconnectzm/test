@@ -560,6 +560,132 @@
       color: #ddd;
     }
 
+    /* NEW: Detailed View Styles */
+    .user-details-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .detail-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--divider);
+    }
+
+    .detail-label {
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    .detail-value {
+      font-weight: 400;
+    }
+
+    .user-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 12px;
+      margin: 20px 0;
+    }
+
+    .stat-card {
+      background: var(--bg-color);
+      border-radius: 8px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--primary-color);
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .complaint-timeline {
+      margin: 20px 0;
+    }
+
+    .timeline-item {
+      display: flex;
+      margin-bottom: 16px;
+      position: relative;
+    }
+
+    .timeline-item:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      left: 20px;
+      top: 40px;
+      bottom: -20px;
+      width: 2px;
+      background: var(--divider);
+    }
+
+    .timeline-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--primary-color);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 16px;
+      flex-shrink: 0;
+      z-index: 1;
+    }
+
+    .timeline-content {
+      flex: 1;
+    }
+
+    .timeline-date {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-bottom: 4px;
+    }
+
+    .timeline-text {
+      font-size: 14px;
+    }
+
+    .full-description {
+      background: var(--bg-color);
+      border-radius: 8px;
+      padding: 16px;
+      margin: 16px 0;
+      line-height: 1.6;
+    }
+
+    .action-history {
+      margin-top: 20px;
+    }
+
+    .history-item {
+      background: var(--bg-color);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .modal-lg {
+      max-width: 800px;
+    }
+
+    .modal-xl {
+      max-width: 1000px;
+    }
+
     /* Responsive */
     @media (max-width: 768px) {
       .user-header {
@@ -584,6 +710,14 @@
 
       .modal {
         padding: 10px;
+      }
+
+      .user-details-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .modal-lg, .modal-xl {
+        max-width: 95%;
       }
     }
   </style>
@@ -707,6 +841,44 @@
       <div class="modal-footer">
         <button class="btn btn-outline" onclick="closeActionModal()">Cancel</button>
         <button class="btn" id="confirmActionBtn">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- NEW: User Details Modal -->
+  <div class="modal" id="userDetailsModal" style="display: none;">
+    <div class="modal-content modal-lg">
+      <div class="modal-header">
+        <div class="modal-title" id="userDetailsTitle">User Details</div>
+        <button class="btn btn-outline" onclick="closeUserDetailsModal()" style="margin: 0;">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body" id="userDetailsBody">
+        <!-- User details will be loaded here -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeUserDetailsModal()">Close</button>
+        <button class="btn btn-primary" id="userDetailsActionBtn" style="display: none;">Take Action</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- NEW: Complaint Details Modal -->
+  <div class="modal" id="complaintDetailsModal" style="display: none;">
+    <div class="modal-content modal-xl">
+      <div class="modal-header">
+        <div class="modal-title" id="complaintDetailsTitle">Complaint Details</div>
+        <button class="btn btn-outline" onclick="closeComplaintDetailsModal()" style="margin: 0;">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body" id="complaintDetailsBody">
+        <!-- Complaint details will be loaded here -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeComplaintDetailsModal()">Close</button>
+        <button class="btn btn-primary" id="complaintActionBtn" style="display: none;">Update Status</button>
       </div>
     </div>
   </div>
@@ -1199,15 +1371,488 @@
       }
     }
 
-    // View details functions (placeholder)
-    function viewUserDetails(uid) {
-      alert('View user details for: ' + uid);
-      // Implement detailed user view
+    // View user details - IMPLEMENTED
+    async function viewUserDetails(uid) {
+      try {
+        console.log('Loading user details for:', uid);
+        
+        // Show loading state
+        document.getElementById('userDetailsBody').innerHTML = `
+          <div class="loading">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Loading user details...</p>
+          </div>
+        `;
+        
+        document.getElementById('userDetailsModal').style.display = 'flex';
+
+        // Get user data
+        const userDoc = await db.collection('users').doc(uid).get();
+        
+        if (!userDoc.exists) {
+          document.getElementById('userDetailsBody').innerHTML = `
+            <div class="empty-state">
+              <i class="fas fa-user-slash"></i>
+              <h3>User Not Found</h3>
+              <p>The user data could not be loaded.</p>
+            </div>
+          `;
+          return;
+        }
+
+        const user = userDoc.data();
+        user.uid = uid;
+
+        // Get additional user data (jobs, ratings, etc.)
+        const [jobsSnapshot, ratingsSnapshot, favoritesSnapshot] = await Promise.all([
+          db.collection('jobs')
+            .where(user.accountType === 'professional' ? 'workerId' : 'clientId', '==', uid)
+            .get(),
+          db.collection('jobs')
+            .where('workerId', '==', uid)
+            .where('rated', '==', true)
+            .get(),
+          db.collection('users').doc(uid).collection('favorites').get()
+        ]);
+
+        // Calculate stats
+        const totalJobs = jobsSnapshot.size;
+        const completedJobs = jobsSnapshot.docs.filter(doc => doc.data().status === 'completed').length;
+        const pendingJobs = jobsSnapshot.docs.filter(doc => doc.data().status === 'pending').length;
+        const averageRating = ratingsSnapshot.size > 0 
+          ? (ratingsSnapshot.docs.reduce((sum, doc) => sum + (doc.data().rating || 0), 0) / ratingsSnapshot.size).toFixed(1)
+          : 'No ratings';
+        const totalFavorites = favoritesSnapshot.size;
+
+        // Get suspension/complaint history
+        const complaintsSnapshot = await db.collection('complaints')
+          .where('userId', '==', uid)
+          .orderBy('createdAt', 'desc')
+          .get();
+
+        const complaints = complaintsSnapshot.docs.map(doc => {
+          const data = doc.data();
+          data.id = doc.id;
+          return data;
+        });
+
+        // Format the user details HTML
+        const status = user.accountStatus || 'active';
+        const statusClass = `status-${status}`;
+        const statusText = status.charAt(0).toUpperCase() + status.slice(1);
+
+        let userDetailsHTML = `
+          <div class="user-details-grid">
+            <div class="detail-item">
+              <span class="detail-label">Full Name:</span>
+              <span class="detail-value">${user.fullName || 'Not provided'}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Email:</span>
+              <span class="detail-value">${user.email || 'Not provided'}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Phone:</span>
+              <span class="detail-value">${user.phone || 'Not provided'}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Account Type:</span>
+              <span class="detail-value">${user.accountType === 'professional' ? 'Professional' : 'Normal User'}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Account Status:</span>
+              <span class="detail-value user-status ${statusClass}">${statusText}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Member Since:</span>
+              <span class="detail-value">${user.createdAt ? user.createdAt.toDate().toLocaleDateString() : 'Unknown'}</span>
+            </div>
+        `;
+
+        if (user.accountType === 'professional') {
+          userDetailsHTML += `
+            <div class="detail-item">
+              <span class="detail-label">Profession:</span>
+              <span class="detail-value">${user.jobTitle || 'Not specified'}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Location:</span>
+              <span class="detail-value">${user.area || 'N/A'}, ${user.city || 'N/A'}</span>
+            </div>
+          `;
+        }
+
+        userDetailsHTML += `</div>`;
+
+        // Add user stats
+        userDetailsHTML += `
+          <div class="user-stats-grid">
+            <div class="stat-card">
+              <div class="stat-number">${totalJobs}</div>
+              <div class="stat-label">Total Jobs</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number">${completedJobs}</div>
+              <div class="stat-label">Completed</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number">${pendingJobs}</div>
+              <div class="stat-label">Pending</div>
+            </div>
+        `;
+
+        if (user.accountType === 'professional') {
+          userDetailsHTML += `
+            <div class="stat-card">
+              <div class="stat-number">${averageRating}</div>
+              <div class="stat-label">Average Rating</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number">${ratingsSnapshot.size}</div>
+              <div class="stat-label">Total Ratings</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number">${user.jobsCompleted || 0}</div>
+              <div class="stat-label">Jobs Completed</div>
+            </div>
+          `;
+        } else {
+          userDetailsHTML += `
+            <div class="stat-card">
+              <div class="stat-number">${totalFavorites}</div>
+              <div class="stat-label">Favorites</div>
+            </div>
+          `;
+        }
+
+        userDetailsHTML += `</div>`;
+
+        // Add suspension/deletion reason if applicable
+        if (user.suspensionReason) {
+          userDetailsHTML += `
+            <div class="full-description">
+              <h4>Suspension Reason</h4>
+              <p>${user.suspensionReason}</p>
+              <small>Suspended on: ${user.suspendedAt ? user.suspendedAt.toDate().toLocaleDateString() : 'Unknown date'}</small>
+            </div>
+          `;
+        }
+
+        if (user.deletionReason) {
+          userDetailsHTML += `
+            <div class="full-description">
+              <h4>Deletion Reason</h4>
+              <p>${user.deletionReason}</p>
+              <small>Deleted on: ${user.deletedAt ? user.deletedAt.toDate().toLocaleDateString() : 'Unknown date'}</small>
+            </div>
+          `;
+        }
+
+        // Add complaint history
+        if (complaints.length > 0) {
+          userDetailsHTML += `
+            <div class="action-history">
+              <h4>Complaint History (${complaints.length})</h4>
+              ${complaints.map(complaint => `
+                <div class="history-item">
+                  <strong>${getComplaintReasonText(complaint.reason)}</strong> - 
+                  <span class="complaint-status status-${complaint.status}">${complaint.status}</span>
+                  <br>
+                  <small>Submitted: ${complaint.createdAt ? complaint.createdAt.toDate().toLocaleDateString() : 'Unknown date'}</small>
+                  ${complaint.adminReason ? `<br><small><strong>Admin Response:</strong> ${complaint.adminReason}</small>` : ''}
+                </div>
+              `).join('')}
+            </div>
+          `;
+        }
+
+        // Add professional description if available
+        if (user.jobDescription) {
+          userDetailsHTML += `
+            <div class="full-description">
+              <h4>Professional Description</h4>
+              <p>${user.jobDescription}</p>
+            </div>
+          `;
+        }
+
+        document.getElementById('userDetailsBody').innerHTML = userDetailsHTML;
+        document.getElementById('userDetailsTitle').textContent = `User Details: ${user.fullName || 'Unknown User'}`;
+
+        // Set up action button based on current status
+        const actionBtn = document.getElementById('userDetailsActionBtn');
+        actionBtn.style.display = 'block';
+        
+        if (status === 'active') {
+          actionBtn.className = 'btn btn-warning';
+          actionBtn.innerHTML = '<i class="fas fa-pause"></i> Suspend User';
+          actionBtn.onclick = () => suspendUser(uid, user.fullName);
+        } else if (status === 'suspended') {
+          actionBtn.className = 'btn btn-secondary';
+          actionBtn.innerHTML = '<i class="fas fa-play"></i> Unsuspend User';
+          actionBtn.onclick = () => unsuspendUser(uid, user.fullName);
+        } else {
+          actionBtn.style.display = 'none';
+        }
+
+      } catch (error) {
+        console.error('Error loading user details:', error);
+        document.getElementById('userDetailsBody').innerHTML = `
+          <div class="empty-state">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h3>Error Loading Details</h3>
+            <p>${error.message}</p>
+          </div>
+        `;
+      }
     }
 
-    function viewComplaintDetails(complaintId) {
-      alert('View complaint details for: ' + complaintId);
-      // Implement detailed complaint view
+    // View complaint details - IMPLEMENTED
+    async function viewComplaintDetails(complaintId) {
+      try {
+        console.log('Loading complaint details for:', complaintId);
+        
+        // Show loading state
+        document.getElementById('complaintDetailsBody').innerHTML = `
+          <div class="loading">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Loading complaint details...</p>
+          </div>
+        `;
+        
+        document.getElementById('complaintDetailsModal').style.display = 'flex';
+
+        // Get complaint data
+        const complaintDoc = await db.collection('complaints').doc(complaintId).get();
+        
+        if (!complaintDoc.exists) {
+          document.getElementById('complaintDetailsBody').innerHTML = `
+            <div class="empty-state">
+              <i class="fas fa-flag"></i>
+              <h3>Complaint Not Found</h3>
+              <p>The complaint data could not be loaded.</p>
+            </div>
+          `;
+          return;
+        }
+
+        const complaint = complaintDoc.data();
+        complaint.id = complaintId;
+
+        // Get user data for the complaint
+        const userDoc = await db.collection('users').doc(complaint.userId).get();
+        const userData = userDoc.exists ? userDoc.data() : null;
+
+        // Format the complaint details HTML
+        const statusClass = `status-${complaint.status}`;
+        const date = complaint.createdAt ? complaint.createdAt.toDate() : new Date();
+        
+        let complaintHTML = `
+          <div class="user-details-grid">
+            <div class="detail-item">
+              <span class="detail-label">Complaint ID:</span>
+              <span class="detail-value">${complaintId}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Status:</span>
+              <span class="detail-value complaint-status ${statusClass}">${complaint.status}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Submitted:</span>
+              <span class="detail-value">${date.toLocaleDateString()} at ${date.toLocaleTimeString()}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">User Type:</span>
+              <span class="detail-value">${complaint.userType === 'professional' ? 'Professional' : 'Normal User'}</span>
+            </div>
+          </div>
+
+          <div class="user-details-grid">
+            <div class="detail-item">
+              <span class="detail-label">User Name:</span>
+              <span class="detail-value">${complaint.userName || 'Unknown'}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">User Email:</span>
+              <span class="detail-value">${complaint.userEmail || 'Not provided'}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">User ID:</span>
+              <span class="detail-value">${complaint.userId}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Account Status:</span>
+              <span class="detail-value user-status status-${complaint.accountStatus}">${complaint.accountStatus}</span>
+            </div>
+          </div>
+
+          <div class="full-description">
+            <h4>Complaint Reason</h4>
+            <p><strong>${getComplaintReasonText(complaint.reason)}</strong></p>
+          </div>
+
+          <div class="full-description">
+            <h4>User's Detailed Explanation</h4>
+            <p>${complaint.details || 'No additional details provided.'}</p>
+          </div>
+        `;
+
+        // Add admin reason if available
+        if (complaint.adminReason) {
+          complaintHTML += `
+            <div class="full-description">
+              <h4>Admin Response</h4>
+              <p>${complaint.adminReason}</p>
+            </div>
+          `;
+        }
+
+        // Add timeline
+        complaintHTML += `
+          <div class="complaint-timeline">
+            <h4>Complaint Timeline</h4>
+            <div class="timeline-item">
+              <div class="timeline-icon">
+                <i class="fas fa-flag"></i>
+              </div>
+              <div class="timeline-content">
+                <div class="timeline-date">${date.toLocaleDateString()}</div>
+                <div class="timeline-text">
+                  <strong>Complaint Submitted</strong><br>
+                  User filed a complaint regarding ${getComplaintReasonText(complaint.reason).toLowerCase()}
+                </div>
+              </div>
+            </div>
+        `;
+
+        if (complaint.reviewedAt) {
+          const reviewedDate = complaint.reviewedAt.toDate();
+          complaintHTML += `
+            <div class="timeline-item">
+              <div class="timeline-icon">
+                <i class="fas fa-eye"></i>
+              </div>
+              <div class="timeline-content">
+                <div class="timeline-date">${reviewedDate.toLocaleDateString()}</div>
+                <div class="timeline-text">
+                  <strong>Marked as Reviewed</strong><br>
+                  Reviewed by: ${complaint.reviewedBy || 'Unknown admin'}
+                </div>
+              </div>
+            </div>
+          `;
+        }
+
+        if (complaint.resolvedAt) {
+          const resolvedDate = complaint.resolvedAt.toDate();
+          complaintHTML += `
+            <div class="timeline-item">
+              <div class="timeline-icon">
+                <i class="fas fa-check-circle"></i>
+              </div>
+              <div class="timeline-content">
+                <div class="timeline-date">${resolvedDate.toLocaleDateString()}</div>
+                <div class="timeline-text">
+                  <strong>Marked as Resolved</strong><br>
+                  Resolved by: ${complaint.resolvedBy || 'Unknown admin'}
+                </div>
+              </div>
+            </div>
+          `;
+        }
+
+        complaintHTML += `</div>`;
+
+        // Add user account details if available
+        if (userData) {
+          complaintHTML += `
+            <div class="full-description">
+              <h4>User Account Information</h4>
+              <div class="user-details-grid">
+                <div class="detail-item">
+                  <span class="detail-label">Full Name:</span>
+                  <span class="detail-value">${userData.fullName || 'Not provided'}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Phone:</span>
+                  <span class="detail-value">${userData.phone || 'Not provided'}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">City:</span>
+                  <span class="detail-value">${userData.city || 'Not provided'}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Area:</span>
+                  <span class="detail-value">${userData.area || 'Not provided'}</span>
+                </div>
+              </div>
+              ${userData.accountType === 'professional' ? `
+                <div class="user-details-grid">
+                  <div class="detail-item">
+                    <span class="detail-label">Profession:</span>
+                    <span class="detail-value">${userData.jobTitle || 'Not specified'}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">Jobs Completed:</span>
+                    <span class="detail-value">${userData.jobsCompleted || 0}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">Rating:</span>
+                    <span class="detail-value">${userData.rating || 'No ratings'}</span>
+                  </div>
+                </div>
+              ` : ''}
+            </div>
+          `;
+        }
+
+        document.getElementById('complaintDetailsBody').innerHTML = complaintHTML;
+        document.getElementById('complaintDetailsTitle').textContent = `Complaint Details: ${getComplaintReasonText(complaint.reason)}`;
+
+        // Set up action button based on current status
+        const actionBtn = document.getElementById('complaintActionBtn');
+        actionBtn.style.display = 'block';
+        
+        if (complaint.status === 'pending') {
+          actionBtn.className = 'btn btn-primary';
+          actionBtn.innerHTML = '<i class="fas fa-check"></i> Mark as Reviewed';
+          actionBtn.onclick = () => {
+            markComplaintReviewed(complaintId);
+            closeComplaintDetailsModal();
+          };
+        } else if (complaint.status === 'reviewed') {
+          actionBtn.className = 'btn btn-secondary';
+          actionBtn.innerHTML = '<i class="fas fa-check-double"></i> Mark as Resolved';
+          actionBtn.onclick = () => {
+            markComplaintResolved(complaintId);
+            closeComplaintDetailsModal();
+          };
+        } else {
+          actionBtn.style.display = 'none';
+        }
+
+      } catch (error) {
+        console.error('Error loading complaint details:', error);
+        document.getElementById('complaintDetailsBody').innerHTML = `
+          <div class="empty-state">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h3>Error Loading Details</h3>
+            <p>${error.message}</p>
+          </div>
+        `;
+      }
+    }
+
+    // Close user details modal
+    function closeUserDetailsModal() {
+      document.getElementById('userDetailsModal').style.display = 'none';
+      document.getElementById('userDetailsActionBtn').style.display = 'none';
+    }
+
+    // Close complaint details modal
+    function closeComplaintDetailsModal() {
+      document.getElementById('complaintDetailsModal').style.display = 'none';
+      document.getElementById('complaintActionBtn').style.display = 'none';
     }
 
     // Filter functions
